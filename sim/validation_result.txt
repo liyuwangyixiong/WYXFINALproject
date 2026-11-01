@@ -1,0 +1,3 @@
+RELEASE_EVIDENCE_PASS files=16 protected_rtl=11 bit_sha256=ec7ac4fb93c1dfd8f15507247a67d389250996a2289fee6e574d7c6eaee0f929
+SCOPE: package integrity and existing Vivado evidence only; board validation pending
+PATH_CHECK checked=102 invalid=0

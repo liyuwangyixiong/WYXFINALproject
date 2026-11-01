@@ -12,6 +12,6 @@ The fixed-point PPG filtering and SpO₂ estimator are included as project RTL. 
 
 ## Supplied sources and vendor outputs
 
-The acquisition modules and Nextion assets came from materials supplied for this project. Their original ownership and any applicable terms remain with their authors. The root MIT license applies only to original project contributions and does not relicense third-party sources, Nextion firmware assets, or AMD/Xilinx-generated IP output.
+The acquisition modules and Nextion assets came from materials supplied for this project. Their original ownership and any applicable terms remain with their authors. The root MIT license applies only to original project contributions and does not relicense third-party sources, Nextion firmware assets, or AMD/Xilinx-generated IP output. Confirm redistribution rights for supplied files with their authors before treating those files as MIT-licensed. The repository does not include vendor-generated IP netlists.
 
 AMD, Xilinx, PYNQ, and Nextion are names of their respective owners and do not imply endorsement. This repository does not contain Vivado or a PYNQ Linux disk image.

@@ -1,53 +1,51 @@
-# PYNQ-Z2 full board project
+# WYXFINALproject: PYNQ-Z2 four-channel health monitor
 
-This is a newly integrated four-channel board design for a PYNQ-Z2 (XC7Z020), created because the complete source that generated the supplied `health_screen_board_top` bitstream was not present in the available archives. The original bitstream and original project were preserved unchanged. This source project builds a new bitstream with top module `wyx_final_board_top`; it is not a byte-for-byte rebuild of the older `sensor_screen.bit`.
+Entry for the 2026 AMD FPGA track, self-selected topic, junior group. The target is the PYNQ-Z2 with an `xc7z020clg400-1` Zynq-7000. FPGA logic accepts a KPT_D01 UART heart-rate value, a separate MAX30102 red/IR pair for SpO2, and two TMP117 temperature devices (probe and room). It filters measurements, handles missing or suspect channels, produces four health states, and drives a Nextion display. The PS-side Python monitor is included as an advisory component.
 
-## What is included
+**Validation status:** Vivado 2024.1 synthesis, implementation, bit generation, DRC, and specified internal-clock timing passed for the new `wyx_final_board_top` design. The included new bitstream has **not** been programmed and checked with all four sensors on a physical board. Earlier board observations used a different firmware and are not evidence that this bitstream is hardware-validated. No personal health records or simulated captures are included.
 
-- KPT_D01 UART heart-rate input and the existing heart-rate smoothing/quality/fusion modules.
-- MAX30102 I²C acquisition, paired red/IR filtering, and SpO₂ estimation.
-- Two TMP117 I²C channels for probe and room temperature.
-- Nextion serial display interface and the supplied editable HMI/TFT assets.
-- PS7-generated 25 MHz FPGA clock for the PYNQ-Z2.
-- ARM Linux advisory engine source and install/run scripts.
-- The generated `firmware/WYXFINALproject.bit`, Vivado reports, and a reproducible project-generation/build script.
+## Contents
 
-The web forwarding/API feature is not included. The ARM monitor does not currently read PL registers by itself; an FPGA-to-ARM producer still needs to deliver records in the documented JSONL format.
+| Directory | Purpose |
+| --- | --- |
+| `src/rtl`, `src/drivers`, `src/display` | Synthesizable Verilog/SystemVerilog. |
+| `src/ip`, `src/constraints` | PS7 Block Design source and PYNQ-Z2 constraints. |
+| `src/arm_monitor` | PS-side Linux advisory source and install/run scripts. |
+| `src/nextion` | Nextion HMI project, compiled screen asset and event sources. |
+| `sim` | Source and build-evidence validation script; no invented sensor data. |
+| `build` | Reproducible Vivado scripts and synthesis/implementation reports. |
+| `board` | Existing bitstream, board connection/deployment instructions. |
+| `data` | Provenance, hash baselines and reference values; no personal measurements. |
+| `skill` | Reusable release-verification skill, usage, limits and checks. |
+| `report` | Design, tool-version, collaboration and validation reports. |
 
-## Open and rebuild
+This follows the recommended directory structure in section 3.3.5.4 of the AMD guide. Standard tool files `README.md`, `LICENSE`, `SKILL.md`, `.gitignore` and `.gitattributes` retain their conventional spellings; other path components use lowercase ASCII letters, digits, underscores or hyphens.
 
-Requires AMD/Xilinx Vivado 2024.1 with Zynq-7000 support.
+## Rebuild on another Windows computer
 
-1. Keep the project in a short ASCII path, such as `D:/FPGA/WYXFINALproject_full_board_20261101`.
-2. Run `open_project.cmd` to generate the XPR and open it in Vivado.
-3. Run `build_bitstream.cmd` to execute synthesis, implementation, timing/DRC checks, and write a new `.bit` under `firmware/`.
+1. Install Vivado 2024.1 with Zynq-7000 support. Version 2024.1 differs from the guide's recommended 2025.2/2026.1. This repository was built and tested for scripts on 2024.1; another release needs a fresh run and IP upgrade review.
+2. Extract or clone to a short ASCII path with no spaces, for example `D:\fpga\wyxfinalproject`. Keep the full directory tree.
+3. If Vivado is not installed at `E:\Xilinx\Vivado\2024.1`, set `VIVADO_BAT` to its `vivado.bat` before running the scripts.
+4. Run `build\open_project.cmd` to generate `vivado_build\WYXFINALproject.xpr` and open it. This generated directory is intentionally omitted from Git because it can be recreated from `src/ip/wyx_ps_clock/wyx_ps_clock.bd` and the source files.
+5. Run `build\build_bitstream.cmd` with the generated project closed to synthesize, implement, check DRC/timing and write `board\wyxfinalproject.bit` and `build\reports\*.rpt`.
+6. Run `python sim\validate_release.py` to check required files, source hashes, bitstream hash and recorded build evidence. It checks packaging/evidence integrity, not sensor accuracy.
 
-If Vivado is not found automatically, set the `VIVADO_BAT` environment variable to the installed `vivado.bat` path before running either command. The scripts do not program a physical board or write an SD card.
+The build scripts do not program hardware or write an SD card. See [board/README.md](board/README.md) for the distinct board procedure. The PS monitor does not automatically read PL registers: a producer must provide records matching `src/arm_monitor/interface.json`. It has no live website forwarding. Missing SpO2 or room-temperature data remain missing and must never be filled from old readings.
 
-## Build evidence
+## Reported build result
 
-The included build was run with Vivado 2024.1 for `xc7z020clg400-1`.
+| Item | Vivado 2024.1 result |
+| --- | ---: |
+| Internal clock | 25 MHz PS FCLK0 |
+| LUT | 20,846 / 53,200 (39.18%) |
+| Flip-flop | 6,421 / 106,400 (6.03%) |
+| DSP48E1 | 55 / 220 (25.00%) |
+| Block RAM tiles | 0 / 140 |
+| Routed WNS / WHS | +7.569 ns / +0.039 ns |
+| DRC | 0 errors, 127 advisory warnings |
 
-- Synthesis: 0 errors and 0 critical warnings.
-- Implementation and bit generation: completed successfully.
-- Routed timing: WNS +7.569 ns, TNS 0 ns, WHS +0.039 ns, THS 0 ns; all specified 25 MHz internal-clock timing constraints are met.
-- DRC: 0 errors. Vivado emitted advisory warnings, including DSP pipeline recommendations.
-- I/O timing: asynchronous sensor/UART pins do not have synchronous external input/output delay constraints. The reported internal clock timing is not an external electrical timing or live sensor validation result.
-- The 11 protected existing health/filter/UART RTL modules match the pre-integration SHA-256 baseline in `evidence/core_sha256.json`.
-- A separate source-only copy containing just the PS7 `.bd` generated the Vivado project and passed synthesis; see `evidence/clean_source_reproduction.txt`.
-- New bitstream SHA-256: `ec7ac4fb93c1dfd8f15507247a67d389250996a2289fee6e574d7c6eaee0f929` (4,045,679 bytes).
+These are reports for the same RTL before the directory-only reorganization. An independent rebuild after reorganization passed with the same resource and timing values; its configuration payload matched the released bitstream byte-for-byte after the creation-time header (see `data/clean_rebuild_20261101.txt`). See `build/reports/` and `report/design_report.md`. External asynchronous I/O delay is not constrained, so timing closure here is not proof of electrical or board-level correctness. No directly comparable pre-optimization whole-board baseline is available; the report does not claim a measured speed/resource improvement.
 
-This verifies that Vivado built the design and met the constraints that are present. The newly generated bitstream has not yet been programmed and tested on the physical board.
+## License and provenance
 
-## Layout
-
-- `rtl/`, `drivers/`, `display/`: synthesizable design sources.
-- `ip/wyx_ps_clock/wyx_ps_clock.bd`: PS7 clock Block Design.
-- `constraints/pynqz2.xdc`: PYNQ-Z2 package pins and I/O standards.
-- `tools/create_project.tcl`, `tools/build.tcl`: project and build entry points.
-- `firmware/`: output bitstream.
-- `evidence/build/`: reports from the verified build.
-- `arm_monitor/`: ARM-side health evidence/advisory engine; external-input mode has no simulated fallback.
-- `nextion/`: screen assets and editable HMI files.
-
-Thresholds in the project are configurable demonstration parameters, not medical limits or a certified life-support function. See `THIRD_PARTY_NOTICES.md` for the scope of licenses and supplied materials.
+Original project contributions are under the MIT license in `LICENSE`. Supplied sensor/display assets and vendor material retain their own ownership and terms; see [third-party notices](report/third_party_notices.md). The source that generated the earlier opaque `sensor_screen.bit` was not found. This repository integrates a new complete top and does not claim to reproduce that older binary. Thresholds are student-demo settings, not clinical limits.

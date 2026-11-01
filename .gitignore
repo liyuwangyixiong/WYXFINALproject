@@ -8,7 +8,6 @@
 *.hw/
 *.ip_user_files/
 *.srcs/
-**/sim/
 **/sim_1/
 *.dcp
 *.pb
@@ -17,8 +16,8 @@
 *.vcd
 __pycache__/
 *.py[cod]
-arm_monitor/*.sqlite3
-arm_monitor/*.jsonl
+*.sqlite3
+*.jsonl
 
 # Recreated by Vivado from the supplied Block Design
 vivado_build/

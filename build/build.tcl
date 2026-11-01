@@ -3,15 +3,15 @@ set project_dir [file join $root vivado_build]
 set_param general.maxThreads 4
 if {[current_project -quiet] eq ""} {
     if {![file exists [file join $project_dir WYXFINALproject.xpr]]} {
-        source [file join $root tools create_project.tcl]
+        source [file join $root build create_project.tcl]
     } else {
         open_project [file join $project_dir WYXFINALproject.xpr]
     }
 }
 if {[file normalize [get_property DIRECTORY [current_project]]] ne $project_dir} {error {Wrong project open}}
-file mkdir [file join $root evidence build]
-file mkdir [file join $root firmware]
-set reports [file join $root evidence build]
+file mkdir [file join $root build reports]
+file mkdir [file join $root board]
+set reports [file join $root build reports]
 reset_run impl_1
 reset_run synth_1
 launch_runs synth_1 -jobs 4
@@ -35,8 +35,8 @@ set bad_drc [get_drc_violations -quiet -filter {SEVERITY == Error}]
 if {[llength $bad_drc]} {error "DRC failed: $bad_drc"}
 set bitfile [file join [get_property DIRECTORY [get_runs impl_1]] wyx_final_board_top.bit]
 if {![file exists $bitfile]} {error "Implementation completed without bitstream: $bitfile"}
-file copy -force $bitfile [file join $root firmware WYXFINALproject.bit]
-write_checkpoint -force [file join $root firmware WYXFINALproject_routed.dcp]
+file copy -force $bitfile [file join $root board wyxfinalproject.bit]
+write_checkpoint -force [file join $root vivado_build wyxfinalproject_routed.dcp]
 set f [open [file join $reports result.txt] w]
 puts $f "VIVADO_BUILD_PASS version=[version -short] part=[get_property PART [current_project]] WNS=$wns WHS=$whs"
 close $f

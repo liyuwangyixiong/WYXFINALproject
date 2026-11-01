@@ -1,6 +1,6 @@
 @echo off
 setlocal
-cd /d "%~dp0arm_monitor"
+cd /d "%~dp0..\src\arm_monitor"
 set PYTHONDONTWRITEBYTECODE=1
 where py >nul 2>nul
 if not errorlevel 1 (

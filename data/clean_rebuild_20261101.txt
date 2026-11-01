@@ -1,0 +1,18 @@
+CLEAN_REBUILD_PASS
+Date: 2026-11-01 Asia/Shanghai
+Tool: Vivado 2024.1
+Target: xc7z020clg400-1
+Top: wyx_final_board_top
+Method: copied only the released source, scripts, reports and assets to an isolated directory; excluded .git and vivado_build; ran build/build_bitstream.cmd
+Project generation: pass from src/ip/wyx_ps_clock/wyx_ps_clock.bd
+Synthesis: pass
+Implementation: pass
+Bit generation: pass
+DRC: 0 errors, 127 warnings
+WNS: +7.569 ns
+WHS: +0.039 ns
+Rebuilt bitstream length: 4045679 bytes
+Release bitstream SHA256: ec7ac4fb93c1dfd8f15507247a67d389250996a2289fee6e574d7c6eaee0f929
+Rebuilt bitstream SHA256: 452943809fa75da7719bafbf79fbf830d0ff1495c58faaf932678a8496fb8f15
+Byte comparison: exactly 6 bytes differ, all in the ASCII bitstream creation-time field at offsets 101, 102, 104, 105, 107, 108; bytes after offset 108 are identical.
+Conclusion: independent source rebuild reproduced the FPGA configuration payload. This is build reproducibility, not board programming or live sensor validation.
