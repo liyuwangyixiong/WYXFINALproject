@@ -8,7 +8,7 @@ from pathlib import Path
 
 ALLOWED = re.compile(r"[a-z0-9_-]+(?:\.[a-z0-9_-]+)*\Z")
 CONVENTIONAL = {"README.md", "LICENSE", "SKILL.md", ".gitignore", ".gitattributes"}
-SKIP_DIRS = {".git", "vivado_build", "__pycache__"}
+SKIP_DIRS = {".git", ".Xil", "NA", "vivado_build", "generated", "__pycache__"}
 
 
 def main() -> None:

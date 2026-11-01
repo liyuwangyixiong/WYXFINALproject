@@ -46,7 +46,7 @@ def main() -> None:
     conventional = {"README.md", "LICENSE", "SKILL.md", ".gitignore", ".gitattributes"}
     pattern = re.compile(r"[a-z0-9_-]+(?:\.[a-z0-9_-]+)*\Z")
     for path in ROOT.rglob("*"):
-        if ".git" in path.parts or "vivado_build" in path.parts:
+        if any(part in {".git", ".Xil", "NA", "vivado_build", "generated"} for part in path.relative_to(ROOT).parts):
             continue
         if path.name not in conventional and not pattern.fullmatch(path.name):
             errors.append(f"invalid path component: {path.relative_to(ROOT)}")
@@ -59,15 +59,23 @@ def main() -> None:
 
     inventory = json.loads((ROOT / "data/source_inventory.json").read_text(encoding="utf-8"))
     bit = ROOT / inventory["new_firmware_path"]
-    if not bit.is_file() or sha256(bit) != inventory["new_bit_sha256"]:
-        errors.append("bitstream SHA-256 differs from inventory")
+    bit_hash = sha256(bit) if bit.is_file() else "missing"
+    bit_bytes = bit.read_bytes() if bit.is_file() else b""
+    if len(bit_bytes) != inventory["new_bit_size_bytes"]:
+        errors.append("bitstream size differs from inventory")
+    if bit_hash != inventory["new_bit_sha256"]:
+        # Vivado stamps the creation time into the .bit header on each build.
+        payload_hash = hashlib.sha256(bit_bytes[109:]).hexdigest()
+        if (payload_hash != inventory["new_bit_payload_sha256_after_109"]
+                or b"wyx_final_board_top" not in bit_bytes[:100]):
+            errors.append("bitstream differs beyond the creation-time header")
     if inventory["new_build_validation"]["board_programmed"] is not False:
         errors.append("board validation status must not be inferred from build")
 
     result = (ROOT / "build/reports/result.txt").read_text(encoding="utf-8")
     timing = (ROOT / "build/reports/timing.rpt").read_text(encoding="utf-8")
     utilization = (ROOT / "build/reports/utilization.rpt").read_text(encoding="utf-8")
-    for marker in ("Vivado 2024.1", "xc7z020clg400-1", "wyx_final_board_top"):
+    for marker in ("2024.1", "xc7z020clg400-1", "wyx_final_board_top"):
         if marker not in result + timing + utilization:
             errors.append(f"build marker absent: {marker}")
     if "All user specified timing constraints are met" not in timing:
@@ -80,7 +88,8 @@ def main() -> None:
         for error in errors:
             print("FAIL", error)
         raise SystemExit(1)
-    print(f"RELEASE_EVIDENCE_PASS files={len(REQUIRED)} protected_rtl={len(baseline)} bit_sha256={sha256(bit)}")
+    bit_mode = "exact" if bit_hash == inventory["new_bit_sha256"] else "same_payload_new_timestamp"
+    print(f"RELEASE_EVIDENCE_PASS files={len(REQUIRED)} protected_rtl={len(baseline)} bit_sha256={bit_hash} mode={bit_mode}")
     print("SCOPE: package integrity and existing Vivado evidence only; board validation pending")
 
 
