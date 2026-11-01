@@ -1,0 +1,38 @@
+{
+  "stale_seconds": 5.0,
+  "confirm_seconds": 3.0,
+  "confirm_samples": 3,
+  "recovery_seconds": 2.0,
+  "trend_window_seconds": 10,
+  "common_window_seconds": 2.0,
+  "limits": {
+    "hr": {
+      "danger_low": 50.0,
+      "low": 60.0,
+      "high": 100.0,
+      "danger_high": 120.0,
+      "trend_delta": 10.0
+    },
+    "spo2": {
+      "danger_low": 90.0,
+      "low": 95.0,
+      "high": 100.0,
+      "danger_high": 100.0,
+      "trend_delta": 1.0
+    },
+    "body": {
+      "danger_low": 35.0,
+      "low": 36.3,
+      "high": 37.2,
+      "danger_high": 39.0,
+      "trend_delta": 0.3
+    },
+    "room": {
+      "danger_low": -40.0,
+      "low": 18.0,
+      "high": 28.0,
+      "danger_high": 85.0,
+      "trend_delta": 2.0
+    }
+  }
+}

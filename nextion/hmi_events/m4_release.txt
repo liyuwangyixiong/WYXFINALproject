@@ -1,0 +1,2 @@
+sel=3
+click m5,0

@@ -1,0 +1,15 @@
+VIVADO_BUILD_PASS
+Version: Vivado 2024.1
+Part: xc7z020clg400-1
+Top: wyx_final_board_top
+Build time: 2026-11-01 17:00:25 Asia/Shanghai
+Bitstream: firmware/WYXFINALproject.bit
+Size: 4045679 bytes
+SHA256: ec7ac4fb93c1dfd8f15507247a67d389250996a2289fee6e574d7c6eaee0f929
+Synthesis: 0 errors, 0 critical warnings
+Implementation/bitgen: successful
+DRC: 0 errors, 127 advisory warnings
+Routed timing: WNS +7.569 ns, TNS 0 ns, WHS +0.039 ns, THS 0 ns
+Specified 25 MHz internal-clock constraints: met
+Asynchronous sensor/UART external I/O delays: not specified
+Physical board programming and live sensor validation: not performed

@@ -1,0 +1,6 @@
+*.bit binary
+*.tft binary
+*.zi binary
+*.dcp binary
+*.vcd binary
+*.wdb binary

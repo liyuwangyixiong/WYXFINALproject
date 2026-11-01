@@ -1,0 +1,28 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (win64) Build 5076996 Wed May 22 18:37:14 MDT 2024
+| Date         : Sun Nov  1 17:01:05 2026
+| Host         : <redacted>
+| Command      : report_cdc -details -file <project-root>/evidence/build/cdc.rpt
+| Design       : wyx_final_board_top
+| Device       : 7z020-clg400
+| Speed File   : -1  PRODUCTION 1.12 2019-11-22
+| Design State : Routed
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+CDC Report
+
+ID     Severity  Count  Description
+-----  --------  -----  ------------------------------------------
+CDC-3  Info          3  1-bit synchronized with ASYNC_REG property
+
+Source Clock: input port clock
+Destination Clock: clk_fpga_0
+CDC Type: No Common Primary Clock
+
+Row  ID     Severity  Description                                 Depth  Exception   Source (From)  Destination (To)
+---  -----  --------  ------------------------------------------  -----  ----------  -------------  ----------------------------------------
+  1  CDC-3  Info      1-bit synchronized with ASYNC_REG property      2  False Path  btn_reset      reset_sync_reg[0]/D
+  2  CDC-3  Info      1-bit synchronized with ASYNC_REG property      2  False Path  nextion_rx     u_display/u_link/u_uart/rx_meta_reg/D
+  3  CDC-3  Info      1-bit synchronized with ASYNC_REG property      2  False Path  kpt_uart_rxd   u_health/u_hr_uart/u_rx/rx_sync_reg[0]/D
+

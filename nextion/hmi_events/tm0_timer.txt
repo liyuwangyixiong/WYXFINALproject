@@ -1,0 +1,8 @@
+if(age<20)
+{
+age=age+1
+if(age==20)
+{
+click m6,0
+}
+}

@@ -1,0 +1,11 @@
+CLEAN_SOURCE_REPRODUCTION_PASS
+Vivado: 2024.1
+Part: xc7z020clg400-1
+Input IP source: ip/wyx_ps_clock/wyx_ps_clock.bd only
+Generated project: vivado_build/WYXFINALproject.xpr
+Top: wyx_final_board_top
+Result: PS7 target generated, synth_design Complete
+Synthesis errors: 0
+Synthesis critical warnings: 0
+Date: 2026-11-01 Asia/Shanghai
+This check used a separate disposable copy and did not modify the release source tree.

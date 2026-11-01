@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "application": "WYX ARM headless evidence monitor",
+  "scope": "ARM advisory only; no web server, no FPGA register access, no overlay loading",
+  "transport": {
+    "format": "UTF-8 JSONL; one complete JSON object per newline",
+    "input": "regular append-only file or stdin",
+    "max_record_characters": 65536,
+    "output": "one JSON state per second on stdout",
+    "external_default": "tail new records only; no simulated fallback",
+    "from_start": "opt-in replay; producer must report accurate age_seconds",
+    "restart": "source_restart resets sequence tracking and diagnostic history"
+  },
+  "units": {
+    "hr": "bpm",
+    "spo2": "percent",
+    "body": "Celsius",
+    "room": "Celsius"
+  },
+  "upstream_conversion": {
+    "hr_x100": "divide by 100 before ingest",
+    "spo2_x100": "divide by 100 before ingest",
+    "tmp117_signed_q7": "sign-extend 16-bit then divide by 128"
+  },
+  "input_fields": {
+    "sequence": "required nonnegative integer, strictly increasing per transport packet",
+    "channels": "object with hr, spo2, body, room; absent channels are unavailable",
+    "channels.*.sequence": "required observation counter; increments for each new communication/quality report",
+    "channels.*.sample_sequence": "required for valid values; increments only on a real new measurement, not polling or retransmission",
+    "channels.*.valid": "required Boolean",
+    "channels.*.value": "finite physical-unit number when valid, otherwise null",
+    "channels.*.age_seconds": "measurement age at ingestion, default 0 for immediate live input; must include buffering/replay delay",
+    "channels.*.comm_error": [
+      "ok",
+      "nack",
+      "timeout",
+      "sda_stuck",
+      "format",
+      null
+    ],
+    "channels.*.quality_known": "Boolean; false when upstream quality is unavailable",
+    "channels.*.quality_good": "Boolean when quality_known=true",
+    "channels.*.raw_quality_known": "Boolean, false for KPT_D01 numeric-only frames",
+    "channels.*.rail_ratio": "0..1, required only with actual raw waveform evidence",
+    "channels.*.valid_periods": "nonnegative integer, required only with actual raw waveform evidence",
+    "fpga_state": [
+      "Normal",
+      "Warning",
+      "Danger",
+      "SystemError",
+      null
+    ],
+    "danger_active": "optional Boolean independent upstream FPGA danger flag",
+    "source_label": "optional display label; does not certify physical measurement"
+  },
+  "control_records": [
+    {
+      "event": "source_restart"
+    },
+    {
+      "event": "HELP"
+    }
+  ],
+  "output_fields": {
+    "level": [
+      "normal",
+      "observe",
+      "warning",
+      "alarm",
+      "insufficient"
+    ],
+    "fpga_state": "original upstream four-state value, unchanged; null if not supplied or expired",
+    "assessment_valid": "original permitted channel combinations available and no upstream SystemError",
+    "data_insufficient": "reported independently of dangerous data",
+    "danger_active": "ARM alarm or fresh upstream danger; never masked by data insufficiency",
+    "evidence": "code, observed, decision, next_step, channels, priority",
+    "channels.*.last_valid_age": "seconds since last credible measurement, null if none",
+    "source_mode": [
+      "demo",
+      "external"
+    ],
+    "demo": "explicit Boolean on every state",
+    "advisory_only": true
+  },
+  "original_fpga_rules": {
+    "changed": false,
+    "weights": {
+      "hr": 20,
+      "spo2": 40,
+      "body": 30,
+      "room": 10
+    },
+    "permitted_combinations": "all four, any three, or exactly spo2+body"
+  },
+  "parameters": "settings.json affects ARM advisory only; reload on process restart, no FPGA writes",
+  "threshold_status": "student demonstration parameters, not a clinically validated diagnostic algorithm",
+  "help_delivery": "local SQLite event only; no remote receiver integration in this headless release",
+  "storage": {
+    "engine": "SQLite",
+    "filename": "monitor.sqlite3",
+    "sample_retention_days": 7,
+    "event_limit": 20000,
+    "export_limit": 100000,
+    "csv": "UTF-8 BOM; invalid measurements empty, source_mode present"
+  },
+  "commands": {
+    "demo": "python3 -B monitor.py --mode demo --scenario normal --duration 10",
+    "live_file": "python3 -B monitor.py --mode external --input /path/input.jsonl",
+    "live_stdin": "python3 -B monitor.py --mode external --input -",
+    "settings": "python3 -B monitor.py --mode external --input /path/input.jsonl --settings settings.json",
+    "samples_csv": "python3 -B monitor.py --export samples --output samples.csv",
+    "events_csv": "python3 -B monitor.py --export events --output events.csv",
+    "local_help": "python3 -B monitor.py --help-event",
+    "sd_service_optional": "sudo sh install_on_pynq.sh --enable"
+  }
+}

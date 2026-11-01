@@ -1,0 +1,412 @@
+age=0
+if(s18!=last)
+{
+last=s18
+oldlive=live
+live=s01
+if(s00==0)
+{
+fill 0,0,480,96,4259
+xstr 16,6,448,40,1,2016,4259,0,1,1,"正常"
+xstr 16,48,448,20,0,2016,4259,0,1,1,"Normal"
+xstr 16,72,448,20,0,65535,4259,0,1,1,"四路数据可用，未确认越界告警"
+}
+if(s00==1)
+{
+fill 0,0,480,96,4259
+xstr 16,6,448,40,1,65504,4259,0,1,1,"预警"
+xstr 16,48,448,20,0,65504,4259,0,1,1,"Warning"
+xstr 16,72,448,20,0,65535,4259,0,1,1,"请查看下方未就绪、降级或配置原因"
+}
+if(s00==2)
+{
+fill 0,0,480,96,4259
+xstr 16,6,448,40,1,63488,4259,0,1,1,"危险"
+xstr 16,48,448,20,0,63488,4259,0,1,1,"Danger"
+xstr 16,72,448,20,0,65535,4259,0,1,1,"可信指标持续越界，请查看下方提示"
+}
+if(s00==3)
+{
+fill 0,0,480,96,32768
+xstr 16,6,448,40,1,65535,32768,0,1,1,"系统错误"
+xstr 16,48,448,20,0,65535,32768,0,1,1,"System Error"
+xstr 16,72,448,20,0,65535,32768,0,1,1,"器件组合不足，总体判断不可用"
+}
+t0.txt="心率MAX1: "
+sys0=s02&1
+if(sys0!=0)
+{
+t0.txt=t0.txt+"已隔离 "
+sys0=s05>>0
+sys0=sys0&7
+sys1=sys0&1
+if(sys1!=0)
+{
+t0.txt=t0.txt+"通信 "
+}
+sys1=sys0&2
+if(sys1!=0)
+{
+t0.txt=t0.txt+"无更新/冻结 "
+}
+sys1=sys0&4
+if(sys1!=0)
+{
+t0.txt=t0.txt+"PPG质量 "
+}
+if(sys0==0)
+{
+t0.txt=t0.txt+"原因未提供"
+}
+}
+else
+{
+sys0=s04&1
+if(sys0!=0)
+{
+t0.txt=t0.txt+"配置异常 "
+}
+sys0=s06>>0
+sys0=sys0&7
+if(sys0!=0)
+{
+t0.txt=t0.txt+"异常待确认 "
+}
+sys0=s01&1
+if(sys0==0)
+{
+t0.txt=t0.txt+"等待/过期"
+}
+else
+{
+sys0=s03&1
+if(sys0!=0)
+{
+t0.txt=t0.txt+"指标越界"
+}
+else
+{
+t0.txt=t0.txt+"数据可用"
+}
+}
+}
+xstr 16,98,448,18,0,65535,2113,0,1,1,t0.txt
+t0.txt="血氧MAX2: "
+sys0=s02&2
+if(sys0!=0)
+{
+t0.txt=t0.txt+"已隔离 "
+sys0=s05>>3
+sys0=sys0&7
+sys1=sys0&1
+if(sys1!=0)
+{
+t0.txt=t0.txt+"通信 "
+}
+sys1=sys0&2
+if(sys1!=0)
+{
+t0.txt=t0.txt+"无更新/冻结 "
+}
+sys1=sys0&4
+if(sys1!=0)
+{
+t0.txt=t0.txt+"PPG质量 "
+}
+if(sys0==0)
+{
+t0.txt=t0.txt+"原因未提供"
+}
+}
+else
+{
+sys0=s04&2
+if(sys0!=0)
+{
+t0.txt=t0.txt+"配置异常 "
+}
+sys0=s06>>3
+sys0=sys0&7
+if(sys0!=0)
+{
+t0.txt=t0.txt+"异常待确认 "
+}
+sys0=s01&2
+if(sys0==0)
+{
+t0.txt=t0.txt+"等待/过期"
+}
+else
+{
+sys0=s03&2
+if(sys0!=0)
+{
+t0.txt=t0.txt+"指标越界"
+}
+else
+{
+t0.txt=t0.txt+"数据可用"
+}
+}
+}
+xstr 16,116,448,18,0,65535,2113,0,1,1,t0.txt
+t0.txt="体温传感器: "
+sys0=s02&4
+if(sys0!=0)
+{
+t0.txt=t0.txt+"已隔离 "
+sys0=s05>>6
+sys0=sys0&7
+sys1=sys0&1
+if(sys1!=0)
+{
+t0.txt=t0.txt+"通信 "
+}
+sys1=sys0&2
+if(sys1!=0)
+{
+t0.txt=t0.txt+"无更新/冻结 "
+}
+sys1=sys0&4
+if(sys1!=0)
+{
+t0.txt=t0.txt+"PPG质量 "
+}
+if(sys0==0)
+{
+t0.txt=t0.txt+"原因未提供"
+}
+}
+else
+{
+sys0=s04&4
+if(sys0!=0)
+{
+t0.txt=t0.txt+"配置异常 "
+}
+sys0=s06>>6
+sys0=sys0&7
+if(sys0!=0)
+{
+t0.txt=t0.txt+"异常待确认 "
+}
+sys0=s01&4
+if(sys0==0)
+{
+t0.txt=t0.txt+"等待/过期"
+}
+else
+{
+sys0=s03&4
+if(sys0!=0)
+{
+t0.txt=t0.txt+"指标越界"
+}
+else
+{
+t0.txt=t0.txt+"数据可用"
+}
+}
+}
+xstr 16,134,448,18,0,65535,2113,0,1,1,t0.txt
+t0.txt="室温传感器: "
+sys0=s02&8
+if(sys0!=0)
+{
+t0.txt=t0.txt+"已隔离 "
+sys0=s05>>9
+sys0=sys0&7
+sys1=sys0&1
+if(sys1!=0)
+{
+t0.txt=t0.txt+"通信 "
+}
+sys1=sys0&2
+if(sys1!=0)
+{
+t0.txt=t0.txt+"无更新/冻结 "
+}
+sys1=sys0&4
+if(sys1!=0)
+{
+t0.txt=t0.txt+"PPG质量 "
+}
+if(sys0==0)
+{
+t0.txt=t0.txt+"原因未提供"
+}
+}
+else
+{
+sys0=s04&8
+if(sys0!=0)
+{
+t0.txt=t0.txt+"配置异常 "
+}
+sys0=s06>>9
+sys0=sys0&7
+if(sys0!=0)
+{
+t0.txt=t0.txt+"异常待确认 "
+}
+sys0=s01&8
+if(sys0==0)
+{
+t0.txt=t0.txt+"等待/过期"
+}
+else
+{
+sys0=s03&8
+if(sys0!=0)
+{
+t0.txt=t0.txt+"指标越界"
+}
+else
+{
+t0.txt=t0.txt+"数据可用"
+}
+}
+}
+xstr 16,152,448,18,0,65535,2113,0,1,1,t0.txt
+sys0=s01&4
+if(sys0==0)
+{
+t0.txt="--"
+}
+else
+{
+sys0=s09/10
+covx sys0,t0.txt,0,0
+t0.txt=t0.txt+"."
+sys0=s09%10
+covx sys0,t1.txt,0,0
+t0.txt=t0.txt+t1.txt
+sys0=s11&4
+if(sys0!=0)
+{
+t0.txt="-"+t0.txt
+}
+}
+sys0=s03&4
+if(sys0!=0)
+{
+xstr 12,200,108,36,1,63488,2113,0,1,1,t0.txt
+}
+else
+{
+xstr 12,200,108,36,1,65535,2113,0,1,1,t0.txt
+}
+sys0=s01&8
+if(sys0==0)
+{
+t0.txt="--"
+}
+else
+{
+sys0=s10/10
+covx sys0,t0.txt,0,0
+t0.txt=t0.txt+"."
+sys0=s10%10
+covx sys0,t1.txt,0,0
+t0.txt=t0.txt+t1.txt
+sys0=s11&8
+if(sys0!=0)
+{
+t0.txt="-"+t0.txt
+}
+}
+sys0=s03&8
+if(sys0!=0)
+{
+xstr 132,200,108,36,1,63488,2113,0,1,1,t0.txt
+}
+else
+{
+xstr 132,200,108,36,1,65535,2113,0,1,1,t0.txt
+}
+sys0=s01&1
+if(sys0==0)
+{
+t0.txt="--"
+}
+else
+{
+covx s07,t0.txt,0,0
+}
+sys0=s03&1
+if(sys0!=0)
+{
+xstr 252,200,108,36,1,63488,2113,0,1,1,t0.txt
+}
+else
+{
+xstr 252,200,108,36,1,65535,2113,0,1,1,t0.txt
+}
+sys0=s01&2
+if(sys0==0)
+{
+t0.txt="--"
+}
+else
+{
+sys0=s08/10
+covx sys0,t0.txt,0,0
+t0.txt=t0.txt+"."
+sys0=s08%10
+covx sys0,t1.txt,0,0
+t0.txt=t0.txt+t1.txt
+}
+sys0=s03&2
+if(sys0!=0)
+{
+xstr 372,200,108,36,1,63488,2113,0,1,1,t0.txt
+}
+else
+{
+xstr 372,200,108,36,1,65535,2113,0,1,1,t0.txt
+}
+sys0=s13&1
+if(sys0!=0)
+{
+cle 3,255
+}
+sys0=s12&1
+if(sys0!=0)
+{
+add 3,0,s14
+}
+sys0=s13&2
+if(sys0!=0)
+{
+cle 4,255
+}
+sys0=s12&2
+if(sys0!=0)
+{
+add 4,0,s15
+}
+sys0=s13&4
+if(sys0!=0)
+{
+cle 5,255
+}
+sys0=s12&4
+if(sys0!=0)
+{
+add 5,0,s16
+}
+sys0=s13&8
+if(sys0!=0)
+{
+cle 6,255
+}
+sys0=s12&8
+if(sys0!=0)
+{
+add 6,0,s17
+}
+if(oldlive!=live)
+{
+click m5,0
+}
+}

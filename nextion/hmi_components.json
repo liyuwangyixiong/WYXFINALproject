@@ -1,0 +1,174 @@
+{
+  "model": "NX4832F035_011",
+  "direction": 90,
+  "encoding": "gb2312",
+  "page": "page0",
+  "size": [
+    480,
+    320
+  ],
+  "fonts": [
+    "cn16.zi",
+    "cn32.zi"
+  ],
+  "objects": [
+    {
+      "name": "t0",
+      "type": "Text",
+      "id": 1,
+      "x": 0,
+      "y": 0,
+      "w": 100,
+      "h": 30,
+      "font": 0,
+      "txt_maxl": 120,
+      "txt": ""
+    },
+    {
+      "name": "t1",
+      "type": "Text",
+      "id": 2,
+      "x": 12,
+      "y": 12,
+      "w": 100,
+      "h": 30,
+      "font": 0,
+      "txt_maxl": 120,
+      "txt": ""
+    },
+    {
+      "name": "s0",
+      "type": "Waveform",
+      "id": 3,
+      "x": 20,
+      "y": 264,
+      "w": 440,
+      "h": 48,
+      "ch": 1,
+      "sta": "solid color",
+      "bco": 2113,
+      "gdc": 4259,
+      "pco0": 2016,
+      "gdw": 60,
+      "gdh": 12
+    },
+    {
+      "name": "s1",
+      "type": "Waveform",
+      "id": 4,
+      "x": 20,
+      "y": 264,
+      "w": 440,
+      "h": 48,
+      "ch": 1,
+      "sta": "solid color",
+      "bco": 2113,
+      "gdc": 4259,
+      "pco0": 2016,
+      "gdw": 60,
+      "gdh": 12
+    },
+    {
+      "name": "s2",
+      "type": "Waveform",
+      "id": 5,
+      "x": 20,
+      "y": 264,
+      "w": 440,
+      "h": 48,
+      "ch": 1,
+      "sta": "solid color",
+      "bco": 2113,
+      "gdc": 4259,
+      "pco0": 2016,
+      "gdw": 60,
+      "gdh": 12
+    },
+    {
+      "name": "s3",
+      "type": "Waveform",
+      "id": 6,
+      "x": 20,
+      "y": 264,
+      "w": 440,
+      "h": 48,
+      "ch": 1,
+      "sta": "solid color",
+      "bco": 2113,
+      "gdc": 4259,
+      "pco0": 2016,
+      "gdw": 60,
+      "gdh": 12
+    },
+    {
+      "name": "m0",
+      "type": "Hotspot",
+      "id": 7,
+      "x": 470,
+      "y": 310,
+      "w": 5,
+      "h": 5
+    },
+    {
+      "name": "m1",
+      "type": "Hotspot",
+      "id": 8,
+      "x": 240,
+      "y": 176,
+      "w": 120,
+      "h": 62
+    },
+    {
+      "name": "m2",
+      "type": "Hotspot",
+      "id": 9,
+      "x": 360,
+      "y": 176,
+      "w": 120,
+      "h": 62
+    },
+    {
+      "name": "m3",
+      "type": "Hotspot",
+      "id": 10,
+      "x": 0,
+      "y": 176,
+      "w": 120,
+      "h": 62
+    },
+    {
+      "name": "m4",
+      "type": "Hotspot",
+      "id": 11,
+      "x": 120,
+      "y": 176,
+      "w": 120,
+      "h": 62
+    },
+    {
+      "name": "m5",
+      "type": "Hotspot",
+      "id": 12,
+      "x": 470,
+      "y": 310,
+      "w": 5,
+      "h": 5
+    },
+    {
+      "name": "m6",
+      "type": "Hotspot",
+      "id": 13,
+      "x": 470,
+      "y": 310,
+      "w": 5,
+      "h": 5
+    },
+    {
+      "name": "tm0",
+      "type": "Timer",
+      "id": 14,
+      "tim": 100,
+      "en": 1
+    }
+  ]
+}
