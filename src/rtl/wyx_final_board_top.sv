@@ -172,7 +172,7 @@ health_kpt_uart_top #(.CLK_HZ(CLK_HZ)) u_health(
     .room_read_timeout(room_fault && diag_i2c_error!=1),
     .room_sample_event(room_valid),
     .room_freeze_evidence('0),
-    .room_sample_sequence(room_samples),
+    .room_sample_sequence(room_raw_samples),
     .spo2_ppg_pair_event(ppg_raw_valid),
     .spo2_ppg_pair_replaced('0),
     .spo2_ppg_pair_distorted(ppg_red==0 || ppg_ir==0 || ppg_red==18'h3ffff || ppg_ir==18'h3ffff),

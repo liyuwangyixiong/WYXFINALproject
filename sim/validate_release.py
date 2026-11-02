@@ -23,6 +23,7 @@ REQUIRED = (
     "board/wyxfinalproject.bit",
     "data/core_sha256.json",
     "data/source_inventory.json",
+    "data/board_validation_20261102.md",
     "skill/README.md",
     "skill/sensor-link-diagnosis/SKILL.md",
     "skill/sensor-link-diagnosis/references/triage_record.md",
@@ -52,7 +53,10 @@ def main() -> None:
     conventional = {"README.md", "LICENSE", "SKILL.md", ".gitignore", ".gitattributes"}
     pattern = re.compile(r"[a-z0-9_-]+(?:\.[a-z0-9_-]+)*\Z")
     for path in ROOT.rglob("*"):
-        if any(part in {".git", ".Xil", "NA", "vivado_build", "generated"} for part in path.relative_to(ROOT).parts):
+        parts = path.relative_to(ROOT).parts
+        if parts[:4] == ("src", "ip", "wyx_ps_clock", "ip"):
+            continue
+        if any(part in {".git", ".Xil", ".vivado-ai", "NA", "vivado_build", "generated"} for part in parts):
             continue
         if path.name not in conventional and not pattern.fullmatch(path.name):
             errors.append(f"invalid path component: {path.relative_to(ROOT)}")
@@ -75,8 +79,9 @@ def main() -> None:
         if (payload_hash != inventory["new_bit_payload_sha256_after_109"]
                 or b"wyx_final_board_top" not in bit_bytes[:100]):
             errors.append("bitstream differs beyond the creation-time header")
-    if inventory["new_build_validation"]["board_programmed"] is not False:
-        errors.append("board validation status must not be inferred from build")
+    validation = inventory["new_build_validation"]
+    if validation["board_programmed"] is True and not (ROOT / "data/board_validation_20261102.md").is_file():
+        errors.append("board-programming evidence is missing")
 
     result = (ROOT / "build/reports/result.txt").read_text(encoding="utf-8")
     timing = (ROOT / "build/reports/timing.rpt").read_text(encoding="utf-8")
@@ -86,7 +91,7 @@ def main() -> None:
             errors.append(f"build marker absent: {marker}")
     if "All user specified timing constraints are met" not in timing:
         errors.append("recorded timing report does not show constraint closure")
-    for marker in ("20846", "6421", "55"):
+    for marker in (str(validation["lut_used"]), str(validation["ff_used"]), str(validation["dsp48_used"])):
         if marker not in utilization:
             errors.append(f"utilization marker absent: {marker}")
 
@@ -96,7 +101,7 @@ def main() -> None:
         raise SystemExit(1)
     bit_mode = "exact" if bit_hash == inventory["new_bit_sha256"] else "same_payload_new_timestamp"
     print(f"RELEASE_EVIDENCE_PASS files={len(REQUIRED)} protected_rtl={len(baseline)} bit_sha256={bit_hash} mode={bit_mode}")
-    print("SCOPE: package integrity and existing Vivado evidence only; board validation pending")
+    print("SCOPE: package integrity and Vivado evidence; limited room-channel board check recorded separately")
 
 
 if __name__ == "__main__":

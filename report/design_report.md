@@ -47,13 +47,13 @@ The project was built with Vivado **2024.1**, which is outside the guide's recom
 
 | Metric | Current integrated build | Comparable pre-optimization baseline |
 | --- | ---: | --- |
-| LUT | 20,846 / 53,200 (39.18%) | unavailable |
-| Flip-flop | 6,421 / 106,400 (6.03%) | unavailable |
+| LUT | 20,856 / 53,200 (39.20%) | unavailable |
+| Flip-flop | 6,428 / 106,400 (6.04%) | unavailable |
 | DSP48E1 | 55 / 220 (25.00%) | unavailable |
 | Block RAM tile | 0 / 140 | unavailable |
 | PS FCLK0 | 25 MHz | unavailable |
-| WNS / TNS | +7.569 ns / 0 ns | unavailable |
-| WHS / THS | +0.039 ns / 0 ns | unavailable |
+| WNS / TNS | +8.082 ns / 0 ns | unavailable |
+| WHS / THS | +0.025 ns / 0 ns | unavailable |
 | DRC errors | 0 | unavailable |
 
 The 127 DRC advisory warnings remain in the build record; they are not hidden as a clean warning-free result. External asynchronous I/O has no invented synchronous input/output delay constraint. The internal timing result does not verify electrical timing on the sensor or UART links. There is no same-scope baseline build; a numerical before/after improvement would be misleading. A future optimization study must build two equivalent tops with the same constraints, then record resource, latency and sensor error under the same inputs.
@@ -65,12 +65,13 @@ The 127 DRC advisory warnings remain in the build record; they are not hidden as
 | Release integrity | `sim/validate_release.py` checks required files, protected RTL hashes, bitstream hash and report markers | Run with this package; result in `sim/validation_result.txt` |
 | Project generation | Clean-source copy recreated PS7 outputs from `.bd` and synthesized | Passed with Vivado 2024.1; `data/clean_source_reproduction.txt` |
 | Full synthesis, implementation, bit | `build/reports/*` and `board/wyxfinalproject.bit` | Passed with Vivado 2024.1 |
-| Full independent rebuild after directory change | `data/clean_rebuild_20261101.txt` | Passed; generated configuration payload matched, only creation-time header bytes differed |
+| Full independent rebuild after directory change | `data/clean_rebuild_20261101.txt` | Historical pre-fix build; its payload does not match the current bitstream |
 | Functional RTL simulation for this directory-only revision | No new algorithm or measurement-data change | Not rerun; no simulated capture bundled |
-| New image, physical four-sensor test | New bitstream needs programming and channel-by-channel measurements | Pending |
+| Current image, room channel and screen | `data/board_validation_20261102.md`; raw/filtered room sample counters advanced, fault reason cleared, screen displayed a value | Passed for this limited scope |
+| Current image, physical four-sensor accuracy test | All four channels need independent reference comparison and fault-recovery checks | Pending |
 | ARM live PL feed | JSONL contract exists, but producer is missing | Pending |
 
-Earlier PYNQ-Z2 sessions demonstrated some sensor channels with older images. Their captures have different firmware provenance and may contain personal health values, so they are not copied into this public package or used to mark the new image as validated. For competition submission, the pending board row must be completed with an actual new-image capture and reference comparison.
+Earlier PYNQ-Z2 sessions demonstrated some sensor channels with older images. Their captures have different firmware provenance and may contain personal health values, so they are not copied into this public package or used to mark the current image as fully validated. The 2026-11-02 board check specifically confirmed the room-channel freshness path and screen behavior after correcting the room sample-sequence connection. For competition submission, the pending four-channel accuracy row still needs a current-image capture and reference comparison.
 
 ## 5. Reproduction procedure
 

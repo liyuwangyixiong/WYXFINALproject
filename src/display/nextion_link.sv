@@ -40,7 +40,9 @@ module nextion_link #(
             if(ff_count==2) begin
               packet_pos<=0;ff_count<=0;
               if(packet_type==8'h01 && packet_pos==3 && state!=0) ack_seen<=1;
-              else if(packet_type==8'h88 || (packet_type==8'h66 && packet_pos==4)) screen_reset<=1;
+              // 0x66 is the page-id notification sent by `sendme` after our own
+              // `page 0` command. It does not mean the screen rebooted.
+              else if(packet_type==8'h88) screen_reset<=1;
               else if(packet_pos==3 && packet_type!=8'h01 && state!=0) bad_seen<=1;
             end else begin ff_count<=ff_count+1;packet_pos<=packet_pos+1;end
           end else begin

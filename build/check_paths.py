@@ -8,7 +8,7 @@ from pathlib import Path
 
 ALLOWED = re.compile(r"[a-z0-9_-]+(?:\.[a-z0-9_-]+)*\Z")
 CONVENTIONAL = {"README.md", "LICENSE", "SKILL.md", ".gitignore", ".gitattributes"}
-SKIP_DIRS = {".git", ".Xil", "NA", "vivado_build", "generated", "__pycache__"}
+SKIP_DIRS = {".git", ".Xil", ".vivado-ai", "NA", "vivado_build", "generated", "__pycache__"}
 
 
 def main() -> None:
@@ -20,6 +20,8 @@ def main() -> None:
     checked = 0
     for path in root.rglob("*"):
         relative = path.relative_to(root)
+        if relative.parts[:4] == ("src", "ip", "wyx_ps_clock", "ip"):
+            continue
         if any(part in SKIP_DIRS for part in relative.parts):
             continue
         checked += 1

@@ -4,10 +4,10 @@
 module nextion_display #(
     parameter integer CLK_HZ=100000000, // 实际aclk频率，赫兹
     parameter integer BAUD=115200, // 屏幕Program.s必须设置相同波特率
-    parameter integer REFRESH_MS=250, // 数值/心跳刷新间隔，毫秒
+    parameter integer REFRESH_MS=1000, // 数值/心跳刷新间隔，毫秒
     parameter integer TREND_MS=1000, // 固定趋势采点间隔，毫秒
-    parameter integer RESYNC_MS=300, // 重同步前静默期，毫秒；大于应答超时
-    parameter integer ACK_MS=150 // 每条命令应答上限，毫秒
+    parameter integer RESYNC_MS=1800, // 重同步前静默期，毫秒；大于应答超时
+    parameter integer ACK_MS=1500 // 给屏幕绘制命令留出执行时间
 )(
     input wire aclk,aresetn,tick_1ms,
     input wire [15:0] hr_smooth_bpm_x100,spo2_smooth_percent_x100,

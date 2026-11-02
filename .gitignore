@@ -22,6 +22,7 @@ __pycache__/
 # Recreated by Vivado from the supplied Block Design
 vivado_build/
 generated/
+src/ip/wyx_ps_clock/ip/
 NA/
 **/ipshared/
 **/*.bda

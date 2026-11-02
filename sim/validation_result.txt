@@ -1,14 +1,13 @@
-Release directory:
-RELEASE_EVIDENCE_PASS files=22 protected_rtl=11 bit_sha256=ec7ac4fb93c1dfd8f15507247a67d389250996a2289fee6e574d7c6eaee0f929 mode=exact
-SCOPE: package integrity and existing Vivado evidence only; board validation pending
-PATH_CHECK checked=108 invalid=0
+Release directory, current image (2026-11-02):
+RELEASE_EVIDENCE_PASS files=23 protected_rtl=11 bit_sha256=a9e3cbc179b8791e5b6e3b4caee54ab4e888b544130340f90af4ba30c5bdb74b mode=exact
+SCOPE: package integrity and Vivado evidence; limited room-channel board check recorded separately
+PATH_CHECK checked=137 invalid=0
 
-Skill entrypoint validation (skill-creator quick_validate.py, Python UTF-8 mode):
-sensor-link-diagnosis: Skill is valid!
-filter-fault-evidence: Skill is valid!
-i2c-multidevice-scheduler: Skill is valid!
+Board evidence: data/board_validation_20261102.md
+Vivado build: VIVADO_BUILD_PASS version=2024.1 part=xc7z020clg400-1 WNS=8.082 WHS=0.025
+JTAG program: MAIN_DONE=1
+Room raw/filtered counters: 14 to 16 / 11 to 13; room fault reason=0
+Nextion room display: numeric value and normal refresh confirmed by user
+SpO2 raw rate: about 100 samples/s; accepted result count 18 to 21 after stable optical contact
 
-Earlier isolated full rebuild directory (before this documentation-only skill update):
-RELEASE_EVIDENCE_PASS files=16 protected_rtl=11 bit_sha256=452943809fa75da7719bafbf79fbf830d0ff1495c58faaf932678a8496fb8f15 mode=same_payload_new_timestamp
-SCOPE: package integrity and existing Vivado evidence only; board validation pending
-PATH_CHECK checked=132 invalid=0
+Historical independent rebuild evidence remains in data/clean_rebuild_20261101.txt; it predates the display and room-sequence fixes and does not have the same bitstream payload.

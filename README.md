@@ -2,7 +2,7 @@
 
 Entry for the 2026 AMD FPGA track, self-selected topic, junior group. The target is the PYNQ-Z2 with an `xc7z020clg400-1` Zynq-7000. FPGA logic accepts a KPT_D01 UART heart-rate value, a separate MAX30102 red/IR pair for SpO2, and two TMP117 temperature devices (probe and room). It filters measurements, handles missing or suspect channels, produces four health states, and drives a Nextion display. The PS-side Python monitor is included as an advisory component.
 
-**Validation status:** Vivado 2024.1 synthesis, implementation, bit generation, DRC, and specified internal-clock timing passed for the new `wyx_final_board_top` design. The included new bitstream has **not** been programmed and checked with all four sensors on a physical board. Earlier board observations used a different firmware and are not evidence that this bitstream is hardware-validated. No personal health records or simulated captures are included.
+**Validation status:** Vivado 2024.1 synthesis, implementation, bit generation, DRC, and specified internal-clock timing passed for the current `wyx_final_board_top` design. This bitstream was programmed over JTAG on a PYNQ-Z2 on 2026-11-02. The room TMP117 (`0x48`) was verified to deliver fresh raw and filtered samples, and the user confirmed the Nextion screen displayed a room-temperature number without repeated full-page refreshes. This is a room-channel/display verification, not a four-channel accuracy or ARM live-data acceptance test. No personal health records or simulated captures are included.
 
 ## Contents
 
@@ -37,14 +37,14 @@ The build scripts do not program hardware or write an SD card. See [board/README
 | Item | Vivado 2024.1 result |
 | --- | ---: |
 | Internal clock | 25 MHz PS FCLK0 |
-| LUT | 20,846 / 53,200 (39.18%) |
-| Flip-flop | 6,421 / 106,400 (6.03%) |
+| LUT | 20,856 / 53,200 (39.20%) |
+| Flip-flop | 6,428 / 106,400 (6.04%) |
 | DSP48E1 | 55 / 220 (25.00%) |
 | Block RAM tiles | 0 / 140 |
-| Routed WNS / WHS | +7.569 ns / +0.039 ns |
+| Routed WNS / WHS | +8.082 ns / +0.025 ns |
 | DRC | 0 errors, 127 advisory warnings |
 
-These are reports for the same RTL before the directory-only reorganization. An independent rebuild after reorganization passed with the same resource and timing values; its configuration payload matched the released bitstream byte-for-byte after the creation-time header (see `data/clean_rebuild_20261101.txt`). See `build/reports/` and `report/design_report.md`. External asynchronous I/O delay is not constrained, so timing closure here is not proof of electrical or board-level correctness. No directly comparable pre-optimization whole-board baseline is available; the report does not claim a measured speed/resource improvement.
+These are reports for the current source after the display refresh and room sample-sequence fixes. The earlier independent rebuild is retained as historical evidence in `data/clean_rebuild_20261101.txt`; it does not describe this bitstream. See `build/reports/`, `data/board_validation_20261102.md` and `report/design_report.md`. External asynchronous I/O delay is not constrained, so timing closure here is not proof of electrical or board-level correctness. No directly comparable pre-optimization whole-board baseline is available; the report does not claim a measured speed/resource improvement.
 
 ## License and provenance
 

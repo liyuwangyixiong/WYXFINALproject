@@ -1,12 +1,13 @@
 # Board bring-up and measurement
 
-Target: PYNQ-Z2, Zynq `xc7z020clg400-1`. The prepared FPGA image is `board/wyxfinalproject.bit` (SHA-256 in `data/bitstream_sha256.txt`). This is the newly integrated `wyx_final_board_top` image. It is not the older `sensor_screen.bit` and has not yet completed a physical four-channel acceptance run.
+Target: PYNQ-Z2, Zynq `xc7z020clg400-1`. The prepared FPGA image is `board/wyxfinalproject.bit` (SHA-256 in `data/bitstream_sha256.txt`). This is the newly integrated `wyx_final_board_top` image, not the older `sensor_screen.bit`. A JTAG board check verified room TMP117 freshness and normal Nextion display behavior on 2026-11-02; a physical four-channel accuracy acceptance run remains pending.
 
 ## Connections and prerequisites
 
 - KPT_D01 is the UART heart-rate source. The independent MAX30102 supplies red/IR data for SpO2 over I2C. Probe TMP117 uses address `0x49`; room TMP117 uses `0x48`. Confirm the actual ADDR pin state and shared power/ground before applying power.
 - The PL I/O bank pins are defined in `src/constraints/pynqz2.xdc`. The Nextion display uses the TX/RX pair named there. Verify the screen's power and logic levels against its own specifications; the XDC's `LVCMOS33` is the FPGA I/O standard, not a screen supply specification.
 - The FPGA clock comes from PS7 FCLK0 at 25 MHz. Boot the PYNQ-Z2 from a known working SD Linux image or initialize the PS by a verified board procedure before expecting PL activity. Merely loading a `.bit` into PL does not prove that PS FCLK0 is running.
+- The MAX30102 collects about 100 red/IR pairs per second. The SpO2 estimator waits for a four-second window, then attempts an update each second; poor contact can make the quality gate reject new estimates. A slowly changing displayed percentage alone is not evidence of a slow I2C link. Check the raw sample counter, accepted-result counter, result age and reject bits separately.
 
 ## Board procedure
 
@@ -16,4 +17,4 @@ Target: PYNQ-Z2, Zynq `xc7z020clg400-1`. The prepared FPGA image is `board/wyxfi
 4. Measure each channel with the sensor present, then remove one at a time and confirm that its value becomes unavailable without copying the last good number. Exercise bus timeout and recovery separately. Record source firmware hash, wiring, input/reference device and timestamp in a private lab log.
 5. Compare output with a reference instrument or controlled test source. Report absolute error, update interval and fault response. Do not publish identifiable health measurements without a separate decision to do so.
 
-The board-acceptance results for this new image are **pending**. Older captures from a different image cannot be substituted. The script `src/arm_monitor/run_on_pynq.sh` starts the ARM advisory engine on PYNQ Linux, but requires a JSONL producer conforming to `src/arm_monitor/interface.json`. The PL-to-ARM producer is not included in this integration. Without that producer, do not state that ARM is receiving live PL samples.
+The room-channel and display check is recorded in `data/board_validation_20261102.md`. Four-channel measurement accuracy and fault-recovery acceptance remain pending. Older captures from a different image cannot be substituted. The script `src/arm_monitor/run_on_pynq.sh` starts the ARM advisory engine on PYNQ Linux, but requires a JSONL producer conforming to `src/arm_monitor/interface.json`. The PL-to-ARM producer is not included in this integration. Without that producer, do not state that ARM is receiving live PL samples.
