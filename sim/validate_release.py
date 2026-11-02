@@ -21,9 +21,13 @@ REQUIRED = (
     "build/reports/utilization.rpt",
     "build/reports/drc.rpt",
     "board/wyxfinalproject.bit",
+    "board/install_sd_latest.sh",
+    "board/load_on_pynq.py",
+    "board/prepare_sd_payload.py",
     "data/core_sha256.json",
     "data/source_inventory.json",
     "data/board_validation_20261102.md",
+    "data/board_validation_20261103.md",
     "skill/README.md",
     "skill/sensor-link-diagnosis/SKILL.md",
     "skill/sensor-link-diagnosis/references/triage_record.md",
@@ -82,6 +86,10 @@ def main() -> None:
     validation = inventory["new_build_validation"]
     if validation["board_programmed"] is True and not (ROOT / "data/board_validation_20261102.md").is_file():
         errors.append("board-programming evidence is missing")
+    if validation.get("four_channel_liveness_verified"):
+        evidence = validation.get("four_channel_liveness_evidence", "")
+        if not evidence or not (ROOT / evidence).is_file():
+            errors.append("four-channel liveness evidence is missing")
 
     result = (ROOT / "build/reports/result.txt").read_text(encoding="utf-8")
     timing = (ROOT / "build/reports/timing.rpt").read_text(encoding="utf-8")
@@ -101,7 +109,7 @@ def main() -> None:
         raise SystemExit(1)
     bit_mode = "exact" if bit_hash == inventory["new_bit_sha256"] else "same_payload_new_timestamp"
     print(f"RELEASE_EVIDENCE_PASS files={len(REQUIRED)} protected_rtl={len(baseline)} bit_sha256={bit_hash} mode={bit_mode}")
-    print("SCOPE: package integrity and Vivado evidence; limited room-channel board check recorded separately")
+    print("SCOPE: package integrity and Vivado evidence; four-channel liveness recorded, accuracy and fault recovery pending")
 
 
 if __name__ == "__main__":

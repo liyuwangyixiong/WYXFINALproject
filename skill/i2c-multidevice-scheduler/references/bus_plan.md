@@ -28,7 +28,7 @@ Status is one of `source-reviewed`, `build-checked`, `board-observed`, or `pendi
 
 ## Applied source review in this repository
 
-The current `src/drivers/sensor_acquire.v` instantiates one `i2c_reg_master` and declares seven-bit addresses `0x57` (MAX30102), `0x48` (room TMP117), and `0x49` (probe TMP117). Source parameters request 100 Hz PPG reads and 1 Hz temperature reads; `src/rtl/wyx_final_board_top.sv` sets the bus to 100 kHz. `src/drivers/i2c_reg_master.v` exposes completion/error codes and an open-drain, bounded bus-clear path. These are **source observations**. The integrated top passed the recorded Vivado build, but the released new bitstream has no four-device board-acceptance capture. No effective hardware sampling rate or bus waveform is claimed here.
+The current `src/drivers/sensor_acquire.v` instantiates one `i2c_reg_master` and declares seven-bit addresses `0x57` (MAX30102), `0x48` (room TMP117), and `0x49` (probe TMP117). Source parameters request 100 Hz PPG reads and 1 Hz temperature reads; `src/rtl/wyx_final_board_top.sv` sets the bus to 100 kHz. `src/drivers/i2c_reg_master.v` exposes completion/error codes and an open-drain, bounded bus-clear path. These are **source observations**. The exact-image [board capture](../../../data/board_validation_20261103.md) observed application-level raw sample rates near 100/s and 1/s, respectively. It did not measure ACK timing, bus waveform, voltage, or recovery under an injected fault.
 
 ## Agent prompt
 

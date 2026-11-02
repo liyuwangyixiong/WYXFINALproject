@@ -1,13 +1,13 @@
-Release directory, current image (2026-11-02):
-RELEASE_EVIDENCE_PASS files=23 protected_rtl=11 bit_sha256=a9e3cbc179b8791e5b6e3b4caee54ab4e888b544130340f90af4ba30c5bdb74b mode=exact
-SCOPE: package integrity and Vivado evidence; limited room-channel board check recorded separately
-PATH_CHECK checked=137 invalid=0
+Release directory, current image (2026-11-03 package update):
+RELEASE_EVIDENCE_PASS files=27 protected_rtl=11 bit_sha256=a9e3cbc179b8791e5b6e3b4caee54ab4e888b544130340f90af4ba30c5bdb74b mode=exact
+SCOPE: package integrity and Vivado evidence; four-channel liveness recorded, accuracy and fault recovery pending
+PATH_CHECK invalid=0
+SD_MANIFEST_PASS files=11; bitstream hash matches source_inventory.json
 
-Board evidence: data/board_validation_20261102.md
+Board evidence: data/board_validation_20261102.md and data/board_validation_20261103.md
 Vivado build: VIVADO_BUILD_PASS version=2024.1 part=xc7z020clg400-1 WNS=8.082 WHS=0.025
-JTAG program: MAIN_DONE=1
-Room raw/filtered counters: 14 to 16 / 11 to 13; room fault reason=0
-Nextion room display: numeric value and normal refresh confirmed by user
-SpO2 raw rate: about 100 samples/s; accepted result count 18 to 21 after stable optical contact
+JTAG program: MAIN_DONE=1 for the current bitstream
+Four-channel liveness: all four available in 12 coherent snapshots over 32.25 seconds; raw and filtered result counters advanced
+Heart-rate UART error counter increased by one in the capture; other listed sensor error counters did not increase
 
-Historical independent rebuild evidence remains in data/clean_rebuild_20261101.txt; it predates the display and room-sequence fixes and does not have the same bitstream payload.
+No personal measurements or raw capture are distributed. Numerical accuracy, fault injection and recovery, ARM live ingestion, and persistence after SD boot are separate pending checks. Historical independent rebuild evidence in data/clean_rebuild_20261101.txt predates the display and room-sequence fixes.

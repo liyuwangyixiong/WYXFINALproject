@@ -68,10 +68,11 @@ The 127 DRC advisory warnings remain in the build record; they are not hidden as
 | Full independent rebuild after directory change | `data/clean_rebuild_20261101.txt` | Historical pre-fix build; its payload does not match the current bitstream |
 | Functional RTL simulation for this directory-only revision | No new algorithm or measurement-data change | Not rerun; no simulated capture bundled |
 | Current image, room channel and screen | `data/board_validation_20261102.md`; raw/filtered room sample counters advanced, fault reason cleared, screen displayed a value | Passed for this limited scope |
-| Current image, physical four-sensor accuracy test | All four channels need independent reference comparison and fault-recovery checks | Pending |
+| Current image, four-channel liveness | `data/board_validation_20261103.md`; 12 coherent snapshots showed all four available, with raw and filtered counters advancing | Passed for liveness only |
+| Current image, physical four-sensor accuracy test | All four channels still need independent reference comparison and fault-recovery checks | Pending |
 | ARM live PL feed | JSONL contract exists, but producer is missing | Pending |
 
-Earlier PYNQ-Z2 sessions demonstrated some sensor channels with older images. Their captures have different firmware provenance and may contain personal health values, so they are not copied into this public package or used to mark the current image as fully validated. The 2026-11-02 board check specifically confirmed the room-channel freshness path and screen behavior after correcting the room sample-sequence connection. For competition submission, the pending four-channel accuracy row still needs a current-image capture and reference comparison.
+Earlier PYNQ-Z2 sessions demonstrated some sensor channels with older images. Their captures have different firmware provenance and may contain personal health values, so they are not copied into this public package or used to mark the current image as fully validated. The 2026-11-02 board check confirmed the room-channel freshness path and screen behavior after correcting the room sample-sequence connection. The 2026-11-03 check used the same bitstream and confirmed simultaneous four-channel result production; its public record excludes personal values. For competition submission, the pending accuracy row still needs independent reference comparison for this image.
 
 ## 5. Reproduction procedure
 

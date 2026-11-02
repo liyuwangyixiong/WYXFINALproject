@@ -24,5 +24,6 @@ vivado_build/
 generated/
 src/ip/wyx_ps_clock/ip/
 NA/
+sd_payload/
 **/ipshared/
 **/*.bda

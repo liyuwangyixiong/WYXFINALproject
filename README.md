@@ -2,7 +2,7 @@
 
 Entry for the 2026 AMD FPGA track, self-selected topic, junior group. The target is the PYNQ-Z2 with an `xc7z020clg400-1` Zynq-7000. FPGA logic accepts a KPT_D01 UART heart-rate value, a separate MAX30102 red/IR pair for SpO2, and two TMP117 temperature devices (probe and room). It filters measurements, handles missing or suspect channels, produces four health states, and drives a Nextion display. The PS-side Python monitor is included as an advisory component.
 
-**Validation status:** Vivado 2024.1 synthesis, implementation, bit generation, DRC, and specified internal-clock timing passed for the current `wyx_final_board_top` design. This bitstream was programmed over JTAG on a PYNQ-Z2 on 2026-11-02. The room TMP117 (`0x48`) was verified to deliver fresh raw and filtered samples, and the user confirmed the Nextion screen displayed a room-temperature number without repeated full-page refreshes. This is a room-channel/display verification, not a four-channel accuracy or ARM live-data acceptance test. No personal health records or simulated captures are included.
+**Validation status:** Vivado 2024.1 synthesis, implementation, bit generation, DRC, and specified internal-clock timing passed for the current `wyx_final_board_top` design. This bitstream was programmed over JTAG on a PYNQ-Z2. The room TMP117 and Nextion display were checked on 2026-11-02. A 2026-11-03 capture of the same firmware showed fresh raw and filtered result counters on all four channels, with all four marked available in 12 coherent snapshots. These are liveness checks, not four-channel accuracy, fault-recovery, ARM live-data, or SD persistence acceptance tests. No personal health records or simulated captures are included.
 
 ## Contents
 
@@ -14,7 +14,7 @@ Entry for the 2026 AMD FPGA track, self-selected topic, junior group. The target
 | `src/nextion` | Nextion HMI project, compiled screen asset and event sources. |
 | `sim` | Source and build-evidence validation script; no invented sensor data. |
 | `build` | Reproducible Vivado scripts and synthesis/implementation reports. |
-| `board` | Existing bitstream, board connection/deployment instructions. |
+| `board` | Existing bitstream, board instructions and SD runtime packaging scripts. |
 | `data` | Provenance, hash baselines and reference values; no personal measurements. |
 | `skill` | Three reusable skills: sensor-link diagnosis, filter/fault evidence, and shared I2C scheduling. |
 | `report` | Design, tool-version, collaboration and validation reports. |
@@ -30,7 +30,7 @@ This follows the recommended directory structure in section 3.3.5.4 of the AMD g
 5. Run `build\build_bitstream.cmd` with the generated project closed to synthesize, implement, check DRC/timing and write `board\wyxfinalproject.bit` and `build\reports\*.rpt`.
 6. Run `python sim\validate_release.py` to check required files, source hashes, bitstream identity (or equal configuration payload after a new build timestamp) and recorded build evidence. It checks packaging/evidence integrity, not sensor accuracy. Run `python build\check_paths.py .` for portable names.
 
-The build scripts do not program hardware or write an SD card. See [board/README.md](board/README.md) for the distinct board procedure. The PS monitor does not automatically read PL registers: a producer must provide records matching `src/arm_monitor/interface.json`. It has no live website forwarding. Missing SpO2 or room-temperature data remain missing and must never be filled from old readings.
+The build scripts do not program hardware or write an SD card. See [board/README.md](board/README.md) for the distinct board and SD runtime procedures. The PS monitor does not automatically read PL registers: a producer must provide records matching `src/arm_monitor/interface.json`. It has no live website forwarding. Missing SpO2 or room-temperature data remain missing and must never be filled from old readings.
 
 ## Reported build result
 
@@ -44,7 +44,7 @@ The build scripts do not program hardware or write an SD card. See [board/README
 | Routed WNS / WHS | +8.082 ns / +0.025 ns |
 | DRC | 0 errors, 127 advisory warnings |
 
-These are reports for the current source after the display refresh and room sample-sequence fixes. The earlier independent rebuild is retained as historical evidence in `data/clean_rebuild_20261101.txt`; it does not describe this bitstream. See `build/reports/`, `data/board_validation_20261102.md` and `report/design_report.md`. External asynchronous I/O delay is not constrained, so timing closure here is not proof of electrical or board-level correctness. No directly comparable pre-optimization whole-board baseline is available; the report does not claim a measured speed/resource improvement.
+These are reports for the current source after the display refresh and room sample-sequence fixes. The earlier independent rebuild is retained as historical evidence in `data/clean_rebuild_20261101.txt`; it does not describe this bitstream. See `build/reports/`, `data/board_validation_20261102.md`, `data/board_validation_20261103.md` and `report/design_report.md`. External asynchronous I/O delay is not constrained, so timing closure here is not proof of electrical or board-level correctness. No directly comparable pre-optimization whole-board baseline is available; the report does not claim a measured speed/resource improvement.
 
 ## License and provenance
 

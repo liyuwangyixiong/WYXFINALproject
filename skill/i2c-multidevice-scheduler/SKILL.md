@@ -16,3 +16,5 @@ Use this skill when two or more physical devices share one I2C bus and the desig
 **Output:** a filled bus plan, a per-device evidence table, the first observed scheduling or electrical failure, and the next single discriminating measurement. Do not label an unresponsive device broken until its supply, address, pull-ups, and transaction result are measured.
 
 **Use outside this project:** replace the device names, addresses, rates, and error codes. The method does not require a PYNQ board or a health-monitor application. It does not prove the electrical waveform, signal integrity, or application algorithm from RTL inspection alone.
+
+**Current project observation:** the exact-image [four-channel capture](../../data/board_validation_20261103.md) recorded 3236 new MAX30102 PPG pairs and 33 raw samples from each TMP117 in 32.25 seconds. This supports effective application-level rates near the configured schedule. ACK timing, pull-up voltage, and bus recovery still need direct electrical or fault-injection evidence.

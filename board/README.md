@@ -1,6 +1,6 @@
 # Board bring-up and measurement
 
-Target: PYNQ-Z2, Zynq `xc7z020clg400-1`. The prepared FPGA image is `board/wyxfinalproject.bit` (SHA-256 in `data/bitstream_sha256.txt`). This is the newly integrated `wyx_final_board_top` image, not the older `sensor_screen.bit`. A JTAG board check verified room TMP117 freshness and normal Nextion display behavior on 2026-11-02; a physical four-channel accuracy acceptance run remains pending.
+Target: PYNQ-Z2, Zynq `xc7z020clg400-1`. The prepared FPGA image is `board/wyxfinalproject.bit` (SHA-256 in `data/bitstream_sha256.txt`). This is the newly integrated `wyx_final_board_top` image, not the older `sensor_screen.bit`. JTAG checks verified room TMP117 freshness and normal Nextion display behavior on 2026-11-02, then simultaneous four-channel liveness on 2026-11-03. A physical four-channel accuracy acceptance run remains pending.
 
 ## Connections and prerequisites
 
@@ -17,4 +17,10 @@ Target: PYNQ-Z2, Zynq `xc7z020clg400-1`. The prepared FPGA image is `board/wyxfi
 4. Measure each channel with the sensor present, then remove one at a time and confirm that its value becomes unavailable without copying the last good number. Exercise bus timeout and recovery separately. Record source firmware hash, wiring, input/reference device and timestamp in a private lab log.
 5. Compare output with a reference instrument or controlled test source. Report absolute error, update interval and fault response. Do not publish identifiable health measurements without a separate decision to do so.
 
-The room-channel and display check is recorded in `data/board_validation_20261102.md`. Four-channel measurement accuracy and fault-recovery acceptance remain pending. Older captures from a different image cannot be substituted. The script `src/arm_monitor/run_on_pynq.sh` starts the ARM advisory engine on PYNQ Linux, but requires a JSONL producer conforming to `src/arm_monitor/interface.json`. The PL-to-ARM producer is not included in this integration. Without that producer, do not state that ARM is receiving live PL samples.
+The room/display and four-channel liveness checks are recorded in `data/board_validation_20261102.md` and `data/board_validation_20261103.md`. Measurement accuracy and fault-recovery acceptance remain pending. Older captures from a different image cannot be substituted. The script `src/arm_monitor/run_on_pynq.sh` starts the ARM advisory engine on PYNQ Linux, but requires a JSONL producer conforming to `src/arm_monitor/interface.json`. The PL-to-ARM producer is not included in this integration. Without that producer, do not state that ARM is receiving live PL samples.
+
+## Prepare an existing Linux SD card
+
+The SD scripts package and load the exact bitstream above; they do **not** create a bootable Linux image from a blank card. On a Windows development PC, run `python board/prepare_sd_payload.py`. It verifies the bitstream SHA-256 and creates `sd_payload/wyxfinalproject_latest/` with the board loader, ARM monitor files, and a file-hash manifest. Copy that directory to the existing card's boot partition so that the board sees `/boot/wyxfinalproject_latest` after Linux starts. Do not copy private captures or credentials onto the card.
+
+On a powered PYNQ-Z2 booted from that Linux card, run `sudo sh /boot/wyxfinalproject_latest/board/install_sd_latest.sh`. The installer verifies every packaged file, installs the current bitstream under `/opt/wyx-current`, loads it with FCLK0 at 25 MHz, and enables the ARM advisory service. Check `systemctl status wyx-board-loader.service` and `systemctl status wyx-arm-monitor.service` after a reboot, then confirm the loaded bitstream hash in `journalctl -u wyx-board-loader.service`. This is a software boot loader, not a permanent PL flash operation. The ARM service still needs an external JSONL producer; a running service alone is not evidence of live PL-to-ARM data.

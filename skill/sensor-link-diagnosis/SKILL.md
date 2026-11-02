@@ -15,7 +15,7 @@ description: Locate a missing or untrustworthy FPGA sensor reading by tracing po
 
 ## 在本工程中的已验证效果与边界
 
-源级走查确认了独立 UART 心率链和共享 I²C 链的分界：`src/rtl/kpt_d01_uart_hr.sv`分别给出帧、格式/超时和新样本事件；`src/drivers/sensor_acquire.v`把 MAX30102、室温 TMP117、探头 TMP117 调度在同一 I²C 主机上，并分别给出原始有效事件和错误码。因此可以先区分“多器件共用链路故障”“单地址故障”“原始样本后处理故障”三类待检假设。**这是源码结构核对，不是新版 bit 的四路实物验收**；现有发布版不含 ILA，若现场没有独立采集手段，部分层只能标为未测。
+源级走查确认了独立 UART 心率链和共享 I²C 链的分界：`src/rtl/kpt_d01_uart_hr.sv`分别给出帧、格式/超时和新样本事件；`src/drivers/sensor_acquire.v`把 MAX30102、室温 TMP117、探头 TMP117 调度在同一 I²C 主机上，并分别给出原始有效事件和错误码。因此可以先区分“多器件共用链路故障”“单地址故障”“原始样本后处理故障”三类待检假设。同固件的 [四路板级记录](../../data/board_validation_20261103.md)进一步确认四条路径都产生新结果，但未记录总线电压、ACK 波形或独立参考测量，不能据此验收电气裕量及数值准确度；现有发布版不含 ILA。
 
 ## 失效条件
 

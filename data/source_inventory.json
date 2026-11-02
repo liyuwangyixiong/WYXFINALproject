@@ -33,6 +33,8 @@
     "specified_timing_constraints_met": true,
     "board_programmed": true,
     "room_channel_board_verified": true,
+    "four_channel_liveness_verified": true,
+    "four_channel_liveness_evidence": "data/board_validation_20261103.md",
     "display_normal": true,
     "board_evidence": "data/board_validation_20261102.md",
     "physical_sensor_validation": false,

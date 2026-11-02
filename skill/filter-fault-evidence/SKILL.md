@@ -17,7 +17,7 @@ description: Trace sensor values through freshness, quality, filtering, fault qu
 
 ## 本工程的静态核对结果
 
-`src/rtl/sensor_fault_monitor.sv` 将通信、无更新/冻结和质量分别计数，输出待确认与已确认原因；`src/rtl/metric_robust_smoother.sv` 只接收可信的新指标；`src/rtl/health_parallel4_top.sv` 按物理器件保留四路独立历史、以新鲜度门控输出，并把器件不可用与健康范围告警分开。这证明**源码具备相应结构**，不能替代新版 bitstream 的整板动态验收。
+`src/rtl/sensor_fault_monitor.sv` 将通信、无更新/冻结和质量分别计数，输出待确认与已确认原因；`src/rtl/metric_robust_smoother.sv` 只接收可信的新指标；`src/rtl/health_parallel4_top.sv` 按物理器件保留四路独立历史、以新鲜度门控输出，并把器件不可用与健康范围告警分开。同固件的 [四路板级记录](../../data/board_validation_20261103.md)证明结果计数和有效标志持续更新；尚无独立参考误差或故障注入数据，不能量化滤波效果及容错响应。
 
 ## 失效条件
 
