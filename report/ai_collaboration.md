@@ -11,7 +11,7 @@ This is an abridged, manually curated record of actual project decisions, not a 
 | “网页链路未接通不做了，不用写。” | Kept live website forwarding and receiving API out of the repository. | A planned feature is not a completed, tested deliverable. |
 | Supplied older bitstream could not be matched to complete source. | Built a new `wyx_final_board_top` integration and generated a new bitstream. | Binary provenance must be explicit; build success is not board validation. |
 
-The resulting workflow is: record the requested boundary, inventory existing sources and provenance, preserve protected logic hashes, build in a clean location, publish exact report values, then mark physical test status separately. This became the reusable `skill/reproducible-vivado-release/` skill. It is useful for other Vivado projects because it checks evidence classes and package structure rather than a health-specific threshold.
+The resulting release workflow is: record the requested boundary, inventory existing sources and provenance, preserve protected logic hashes, build in a clean location, publish exact report values, then mark physical test status separately. The reusable skills selected for this submission are `skill/sensor-link-diagnosis/`, `skill/filter-fault-evidence/`, and `skill/i2c-multidevice-scheduler/`. They extract diagnostic and interface reasoning that can be applied to different sensors and FPGA boards; the path check used for release packaging remains under `build/check_paths.py`.
 
 ## Verbatim exchange and self-correction from this release
 
@@ -24,3 +24,11 @@ The resulting workflow is: record the requested boundary, inventory existing sou
 **Model correction excerpt:** “我发现重建后的核验脚本把 Vivado 自动生成的 `.Xil`、`NA` 目录当成源码目录，还要求报告使用固定的版本文字格式。构建本身已通过；我正在修正这两处核验规则，并分别复测原包和重建副本。”
 
 **Retest:** The revised checker excludes only known generated directories, accepts the actual `version=2024.1` report form, and verifies an exact release hash or equal configuration payload after a different timestamp. It passed on both the released directory and the independent full rebuild; see `sim/validation_result.txt` and `data/clean_rebuild_20261101.txt`. This is still build evidence, not a sensor or board test.
+
+## Skill selection and reusable output
+
+**User prompt:** “做124的技能包，按照要求去做” (selecting sensor-link diagnosis, filter/fault evidence, and shared I2C scheduling from the previously reviewed table).
+
+**Model action:** Added three independent `SKILL.md` entrypoints and reusable record templates under `skill/`; each item states applicability, use, observed result, and failure conditions in `skill/README.md`. The older release-path checker was retained as `build/check_paths.py` but removed from the selected skill set. No RTL, algorithm parameter, or experimental input was changed for this extraction.
+
+**Correction and limit:** Source review demonstrates where events and decisions are represented; it is not proof that the newly integrated bitstream produced the same electrical or sensor behavior as older board sessions. Therefore the three skills label their project examples as source/build evidence and require exact-firmware board capture for dynamic claims.

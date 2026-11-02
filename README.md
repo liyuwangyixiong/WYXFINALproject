@@ -16,7 +16,7 @@ Entry for the 2026 AMD FPGA track, self-selected topic, junior group. The target
 | `build` | Reproducible Vivado scripts and synthesis/implementation reports. |
 | `board` | Existing bitstream, board connection/deployment instructions. |
 | `data` | Provenance, hash baselines and reference values; no personal measurements. |
-| `skill` | Reusable release-verification skill, usage, limits and checks. |
+| `skill` | Three reusable skills: sensor-link diagnosis, filter/fault evidence, and shared I2C scheduling. |
 | `report` | Design, tool-version, collaboration and validation reports. |
 
 This follows the recommended directory structure in section 3.3.5.4 of the AMD guide. Standard tool files `README.md`, `LICENSE`, `SKILL.md`, `.gitignore` and `.gitattributes` retain their conventional spellings; other path components use lowercase ASCII letters, digits, underscores or hyphens.
@@ -28,7 +28,7 @@ This follows the recommended directory structure in section 3.3.5.4 of the AMD g
 3. If Vivado is not installed at `E:\Xilinx\Vivado\2024.1`, set `VIVADO_BAT` to its `vivado.bat` before running the scripts.
 4. Run `build\open_project.cmd` to generate `vivado_build\WYXFINALproject.xpr` and open it. This generated directory is intentionally omitted from Git because it can be recreated from `src/ip/wyx_ps_clock/wyx_ps_clock.bd` and the source files.
 5. Run `build\build_bitstream.cmd` with the generated project closed to synthesize, implement, check DRC/timing and write `board\wyxfinalproject.bit` and `build\reports\*.rpt`.
-6. Run `python sim\validate_release.py` to check required files, source hashes, bitstream identity (or equal configuration payload after a new build timestamp) and recorded build evidence. It checks packaging/evidence integrity, not sensor accuracy. Run `python skill\reproducible-vivado-release\scripts\check_paths.py .` for portable names.
+6. Run `python sim\validate_release.py` to check required files, source hashes, bitstream identity (or equal configuration payload after a new build timestamp) and recorded build evidence. It checks packaging/evidence integrity, not sensor accuracy. Run `python build\check_paths.py .` for portable names.
 
 The build scripts do not program hardware or write an SD card. See [board/README.md](board/README.md) for the distinct board procedure. The PS monitor does not automatically read PL registers: a producer must provide records matching `src/arm_monitor/interface.json`. It has no live website forwarding. Missing SpO2 or room-temperature data remain missing and must never be filled from old readings.
 

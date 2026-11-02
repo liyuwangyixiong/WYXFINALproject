@@ -84,4 +84,4 @@ Earlier PYNQ-Z2 sessions demonstrated some sensor channels with older images. Th
 
 The MAX30102 datasheet and the supplied sensor/Nextion packages informed the interfaces. Source and binary provenance are in `data/source_inventory.json` and `report/third_party_notices.md`. The earlier opaque `sensor_screen.bit` did not have a matching complete source; the current image is a new integration.
 
-Selected AI collaboration and correction evidence is in `report/ai_collaboration.md`. The reusable procedure derived from those failures is packaged under `skill/`; it has a scope outside this particular health-monitor design. No online website forwarding is included because the user deferred it.
+Selected AI collaboration and correction evidence is in `report/ai_collaboration.md`. The three reusable workflows selected for the contest are under `skill/`: layered sensor-link diagnosis, filter/fault evidence tracing, and shared-I2C scheduling. Their examples distinguish source/build review from physical measurements, and their templates can be applied to other sensor systems. No online website forwarding is included because the user deferred it.

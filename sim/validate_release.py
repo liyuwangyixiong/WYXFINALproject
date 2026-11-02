@@ -24,6 +24,12 @@ REQUIRED = (
     "data/core_sha256.json",
     "data/source_inventory.json",
     "skill/README.md",
+    "skill/sensor-link-diagnosis/SKILL.md",
+    "skill/sensor-link-diagnosis/references/triage_record.md",
+    "skill/filter-fault-evidence/SKILL.md",
+    "skill/filter-fault-evidence/references/evidence_matrix.md",
+    "skill/i2c-multidevice-scheduler/SKILL.md",
+    "skill/i2c-multidevice-scheduler/references/bus_plan.md",
     "report/design_report.md",
 )
 
