@@ -1,0 +1,18 @@
+Vivado Simulator v2024.1
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: E:/Xilinx/Vivado/2024.1/bin/unwrapped/win64.o/xelab.exe tb_filter_equiv -s tb_filter_equiv_snapshot 
+Multi-threading is on. Using 30 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.wyx_ppg_bandpass_pair_default
+Compiling module work.wyx_mul_s32_const_pipeline(C=32'...
+Compiling module work.wyx_mul_s32_const_pipeline(C=32'...
+Compiling module work.wyx_mul_s32_const_pipeline(C=32'...
+Compiling module work.wyx_ppg_bandpass_pair_200_defaul...
+Compiling module work.tb_filter_equiv
+Built simulation snapshot tb_filter_equiv_snapshot

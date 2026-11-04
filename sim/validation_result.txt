@@ -1,13 +1,14 @@
-Release directory, current image (2026-11-03 package update):
-RELEASE_EVIDENCE_PASS files=27 protected_rtl=11 bit_sha256=a9e3cbc179b8791e5b6e3b4caee54ab4e888b544130340f90af4ba30c5bdb74b mode=exact
-SCOPE: package integrity and Vivado evidence; four-channel liveness recorded, accuracy and fault recovery pending
+Release directory, 2026-11-04 25/100 MHz package:
+RELEASE_EVIDENCE_PASS files=40 protected_rtl=11 bit_sha256=8e8b9b92826471a0af7f88eaa35bbe8679d92853eafea634597baf0a345747bc mode=exact
 PATH_CHECK invalid=0
-SD_MANIFEST_PASS files=11; bitstream hash matches source_inventory.json
+SD_MANIFEST_PASS files=11 bad=0 release=wyxfinalproject-20261104-100mhz
 
-Board evidence: data/board_validation_20261102.md and data/board_validation_20261103.md
-Vivado build: VIVADO_BUILD_PASS version=2024.1 part=xc7z020clg400-1 WNS=8.082 WHS=0.025
-JTAG program: MAIN_DONE=1 for the current bitstream
-Four-channel liveness: all four available in 12 coherent snapshots over 32.25 seconds; raw and filtered result counters advanced
-Heart-rate UART error counter increased by one in the capture; other listed sensor error counters did not increase
+XSim RTL tests run against the released source:
+FILTER_EQUIVALENCE_PASS samples=260
+DIV_EQUIVALENCE_PASS cases=40
+ESTIMATOR_EQUIVALENCE_PASS cycles=91631 good=1 spo2=7840 reject=00
+MAILBOX_PASS received=20
 
-No personal measurements or raw capture are distributed. Numerical accuracy, fault injection and recovery, ARM live ingestion, and persistence after SD boot are separate pending checks. Historical independent rebuild evidence in data/clean_rebuild_20261101.txt predates the display and room-sequence fixes.
+Vivado 2024.1 full-board result: FCLK0=25 MHz, FCLK1=100 MHz, WNS=+0.070 ns, WHS=+0.037 ns, TNS=0, zero failing endpoints, DRC errors=0. See build/reports/ for the original reports. The CDC report retains one critical reset-path classification and 60 mailbox data warnings.
+
+The current 100 MHz image has not been programmed on a board. The room/display and four-channel liveness observations in data/board_validation_20261102.md and data/board_validation_20261103.md apply only to the retained 25 MHz baseline image. Numerical accuracy, fault injection/recovery, ARM live ingestion, and persistence after SD boot remain pending for the new image.

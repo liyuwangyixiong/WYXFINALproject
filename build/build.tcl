@@ -9,9 +9,24 @@ if {[current_project -quiet] eq ""} {
     }
 }
 if {[file normalize [get_property DIRECTORY [current_project]]] ne $project_dir} {error {Wrong project open}}
+set bd [get_files wyx_ps_clock.bd]
+open_bd_design $bd
+validate_bd_design
+save_bd_design
+generate_target -force all $bd
+set wrapper [make_wrapper -files $bd -top]
+add_files -norecurse $wrapper
+foreach folder {rtl drivers display} {
+    foreach pattern {*.v *.sv} {
+        set paths [glob -nocomplain [file join $root src $folder $pattern]]
+        if {[llength $paths]} {add_files -norecurse $paths}
+    }
+}
+update_compile_order -fileset sources_1
 file mkdir [file join $root build reports]
 file mkdir [file join $root board]
 set reports [file join $root build reports]
+set_property AUTO_INCREMENTAL_CHECKPOINT 0 [get_runs synth_1]
 reset_run impl_1
 reset_run synth_1
 launch_runs synth_1 -jobs 4

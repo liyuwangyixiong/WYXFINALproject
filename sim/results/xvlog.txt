@@ -1,0 +1,24 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/27274/Documents/Codex/2026-10-01/ze/work/wyx_public_source_20261101/WYXFINALproject/src/rtl/wyx_ppg_bandpass_pair.sv" into library work
+INFO: [VRFC 10-311] analyzing module wyx_ppg_bandpass_pair
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/27274/Documents/Codex/2026-10-01/ze/work/wyx_public_source_20261101/WYXFINALproject/src/rtl/wyx_ppg_bandpass_pair_200.sv" into library work
+INFO: [VRFC 10-311] analyzing module wyx_ppg_bandpass_pair_200
+INFO: [VRFC 10-311] analyzing module wyx_mul_s32_const_pipeline
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/27274/Documents/Codex/2026-10-01/ze/work/wyx_public_source_20261101/WYXFINALproject/src/rtl/wyx_spo2_u64_div_200.sv" into library work
+INFO: [VRFC 10-311] analyzing module wyx_spo2_u64_div_200
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/27274/Documents/Codex/2026-10-01/ze/work/wyx_public_source_20261101/WYXFINALproject/src/rtl/wyx_spo2_estimator.sv" into library work
+INFO: [VRFC 10-311] analyzing module wyx_spo2_estimator
+INFO: [VRFC 10-311] analyzing module wyx_spo2_u64_div
+INFO: [VRFC 10-311] analyzing module wyx_spo2_u64_sqrt
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/27274/Documents/Codex/2026-10-01/ze/work/wyx_public_source_20261101/WYXFINALproject/src/rtl/wyx_spo2_estimator_200.sv" into library work
+INFO: [VRFC 10-311] analyzing module wyx_spo2_estimator_200
+INFO: [VRFC 10-311] analyzing module wyx_mul_u32_pipeline
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/27274/Documents/Codex/2026-10-01/ze/work/wyx_public_source_20261101/WYXFINALproject/src/rtl/wyx_cdc_mailbox.sv" into library work
+INFO: [VRFC 10-311] analyzing module wyx_cdc_mailbox
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/27274/Documents/Codex/2026-10-01/ze/work/wyx_public_source_20261101/WYXFINALproject/sim/tb_filter_equiv.sv" into library work
+INFO: [VRFC 10-311] analyzing module tb_filter_equiv
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/27274/Documents/Codex/2026-10-01/ze/work/wyx_public_source_20261101/WYXFINALproject/sim/tb_div_equiv.sv" into library work
+INFO: [VRFC 10-311] analyzing module tb_div_equiv
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/27274/Documents/Codex/2026-10-01/ze/work/wyx_public_source_20261101/WYXFINALproject/sim/tb_estimator_equiv.sv" into library work
+INFO: [VRFC 10-311] analyzing module tb_estimator_equiv
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "C:/Users/27274/Documents/Codex/2026-10-01/ze/work/wyx_public_source_20261101/WYXFINALproject/sim/tb_cdc_mailbox.sv" into library work
+INFO: [VRFC 10-311] analyzing module tb_cdc_mailbox

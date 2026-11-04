@@ -1,0 +1,17 @@
+
+****** xsim v2024.1 (64-bit)
+  **** SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
+  **** IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+  **** SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+  **** Start of session at: Wed Nov  4 10:12:35 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_cdc_mailbox_snapshot/xsim_script.tcl
+# xsim {tb_cdc_mailbox_snapshot} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+MAILBOX_PASS received=20
+$finish called at time : 14200 ns : File "C:/Users/27274/Documents/Codex/2026-10-01/ze/work/wyx_public_source_20261101/WYXFINALproject/sim/tb_cdc_mailbox.sv" Line 35
+exit
+INFO: [Common 17-206] Exiting xsim at Wed Nov  4 10:12:38 2026...

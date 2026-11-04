@@ -18,8 +18,13 @@ def main():
     from pynq import Bitstream, Clocks
 
     Clocks.fclk0_mhz = 25
+    Clocks.fclk1_mhz = 100
     Bitstream(str(bitstream)).download()
-    print("WYX_LATEST_PL_LOADED FCLK0_MHZ=25 SHA256=" + actual, flush=True)
+    fclk0 = Clocks.fclk0_mhz
+    fclk1 = Clocks.fclk1_mhz
+    if abs(fclk0 - 25) > 1 or abs(fclk1 - 100) > 1:
+        raise RuntimeError(f"Unexpected PL clocks: FCLK0={fclk0:.3f} FCLK1={fclk1:.3f} MHz")
+    print(f"WYX_LATEST_PL_LOADED FCLK0_MHZ={fclk0:.3f} FCLK1_MHZ={fclk1:.3f} SHA256={actual}", flush=True)
 
 
 if __name__ == "__main__":

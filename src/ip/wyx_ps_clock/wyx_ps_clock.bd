@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x80DBDF89D8A395C7",
+      "boundary_crc": "0x570C7E667A242A83",
       "device": "xc7z020clg400-1",
       "gen_directory": "../../generated/wyx_ps_clock",
       "name": "wyx_ps_clock",
@@ -96,6 +96,32 @@
         "direction": "O",
         "left": "63",
         "right": "0"
+      },
+      "FCLK_CLK1_0": {
+        "type": "clk",
+        "direction": "O",
+        "parameters": {
+          "CLK_DOMAIN": {
+            "value": "wyx_ps_clock_ps7_0_FCLK_CLK1",
+            "value_src": "default_prop"
+          },
+          "FREQ_HZ": {
+            "value": "100000000",
+            "value_src": "user_prop"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default"
+          }
+        }
       }
     },
     "components": {
@@ -131,7 +157,7 @@
             "value": "25.000000"
           },
           "PCW_ACT_FPGA1_PERIPHERAL_FREQMHZ": {
-            "value": "10.000000"
+            "value": "100.000000"
           },
           "PCW_ACT_FPGA2_PERIPHERAL_FREQMHZ": {
             "value": "10.000000"
@@ -221,7 +247,7 @@
             "value": "25000000"
           },
           "PCW_CLK1_FREQ": {
-            "value": "10000000"
+            "value": "100000000"
           },
           "PCW_CLK2_FREQ": {
             "value": "10000000"
@@ -246,6 +272,9 @@
           },
           "PCW_DDR_PERIPHERAL_CLKSRC": {
             "value": "DDR PLL"
+          },
+          "PCW_DDR_RAM_HIGHADDR": {
+            "value": "0x3FFFFFFF"
           },
           "PCW_DM_WIDTH": {
             "value": "4"
@@ -284,7 +313,7 @@
             "value": "1"
           },
           "PCW_EN_CLK1_PORT": {
-            "value": "0"
+            "value": "1"
           },
           "PCW_EN_CLK2_PORT": {
             "value": "0"
@@ -481,11 +510,14 @@
           "PCW_FCLK_CLK0_BUF": {
             "value": "TRUE"
           },
+          "PCW_FCLK_CLK1_BUF": {
+            "value": "TRUE"
+          },
           "PCW_FPGA0_PERIPHERAL_FREQMHZ": {
             "value": "25.000000"
           },
           "PCW_FPGA1_PERIPHERAL_FREQMHZ": {
-            "value": "50"
+            "value": "100.000000"
           },
           "PCW_FPGA2_PERIPHERAL_FREQMHZ": {
             "value": "50"
@@ -494,6 +526,9 @@
             "value": "50"
           },
           "PCW_FPGA_FCLK0_ENABLE": {
+            "value": "1"
+          },
+          "PCW_FPGA_FCLK1_ENABLE": {
             "value": "1"
           },
           "PCW_GP0_EN_MODIFIABLE_TXN": {
@@ -1565,6 +1600,12 @@
         "ports": [
           "ps7/FCLK_CLK0",
           "FCLK_CLK0_0"
+        ]
+      },
+      "ps7_FCLK_CLK1": {
+        "ports": [
+          "ps7/FCLK_CLK1",
+          "FCLK_CLK1_0"
         ]
       },
       "ps7_FCLK_RESET0_N": {

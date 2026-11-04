@@ -32,3 +32,13 @@ The resulting release workflow is: record the requested boundary, inventory exis
 **Model action:** Added three independent `SKILL.md` entrypoints and reusable record templates under `skill/`; each item states applicability, use, observed result, and failure conditions in `skill/README.md`. The older release-path checker was retained as `build/check_paths.py` but removed from the selected skill set. No RTL, algorithm parameter, or experimental input was changed for this extraction.
 
 **Correction and limit:** Source review demonstrates where events and decisions are represented; it is not proof that the newly integrated bitstream produced the same electrical or sensor behavior as older board sessions. Therefore the three skills label their project examples as source/build evidence and require exact-firmware board capture for dynamic claims.
+
+## 100 MHz optimization exchange, 2026-11-03/04
+
+**User prompts:** “我想提升到200mhz”, then “计算核心 200 MHz，外设保持低速”, then “不行就到100Mhz”. The requested scope was a faster SpO2 compute path while keeping the peripheral clock low.
+
+**Model action:** Rechecked the existing 25 MHz routed netlist at 200 MHz (WNS -26.918 ns, 19,857 failing endpoints), pipelined the PPG filter, divider and estimator, added PS FCLK1, and transferred samples/results with toggle-handshake mailboxes. The 200 MHz filter and divider modules routed successfully, but the estimator did not meet 200 MHz. The full board was therefore built at FCLK0=25 MHz and FCLK1=100 MHz. The 100 MHz route had WNS +0.070 ns, no failing endpoints, and a bitstream was generated. XSim passed the included limited equivalence and mailbox tests.
+
+**Self-correction:** After the user asked “所以能达到100mhz是吗”, the model initially answered with the then-available standalone estimator result (+0.073 ns) and said full-board verification was still pending. The later full-board route completed while work continued. When the model repeated that outdated status, the user corrected it with “都通过了”. The model checked the complete report and updated the claim to “full-board 100 MHz timing passed”. This is a Vivado timing result; no 100 MHz board test has been recorded.
+
+**Skill boundary:** The existing three `skill/` workflows remain focused on sensor diagnosis, validity evidence and bus scheduling. Their 2026-11-03 board examples belong to the 25 MHz baseline image. The 100 MHz work reinforced the same reusable rule: tie each measurement and conclusion to the exact firmware hash and validation layer. The skills were not rebranded as a clock-domain design method without broader independent validation.

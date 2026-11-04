@@ -24,7 +24,7 @@ flowchart LR
   F -. producer not included .-> A[ARM Linux advisory engine]
 ```
 
-The top is `src/rtl/wyx_final_board_top.sv`. It instantiates the shared I2C acquisition, PPG filtering and SpO2 estimator, existing four-channel filter/fault/fusion modules, Nextion driver, and PS7 clock wrapper. The PS7 Block Design supplies FCLK0 at 25 MHz. The ARM Python monitor is an independent advisory consumer of JSONL records, not a verified direct reader of PL registers; a live PL-to-ARM producer is still needed.
+The top is `src/rtl/wyx_final_board_top.sv`. It instantiates the shared I2C acquisition, PPG filtering and SpO2 estimator, existing four-channel filter/fault/fusion modules, Nextion driver, and PS7 clock wrapper. The PS7 Block Design supplies FCLK0 at 25 MHz for acquisition, display and health-state logic, and FCLK1 at 100 MHz for the PPG filter and SpO2 estimator. Toggle-handshake mailboxes transfer paired PPG samples, overflow events, filter faults and estimator results between the two clock domains. The ARM Python monitor is an independent advisory consumer of JSONL records, not a verified direct reader of PL registers; a live PL-to-ARM producer is still needed.
 
 ### Fixed-point and interface contract
 
@@ -45,42 +45,45 @@ PL handles time-critical acquisition, filters, range guards, sustained-fault con
 
 The project was built with Vivado **2024.1**, which is outside the guide's recommended 2025.2/2026.1 versions. The repository therefore pins 2024.1 in its scripts and documents how to regenerate the XPR. Target part: `xc7z020clg400-1`. The full reports are under `build/reports/` and the bitstream hash is in `data/bitstream_sha256.txt`.
 
-| Metric | Current integrated build | Comparable pre-optimization baseline |
-| --- | ---: | --- |
-| LUT | 20,856 / 53,200 (39.20%) | unavailable |
-| Flip-flop | 6,428 / 106,400 (6.04%) | unavailable |
-| DSP48E1 | 55 / 220 (25.00%) | unavailable |
-| Block RAM tile | 0 / 140 | unavailable |
-| PS FCLK0 | 25 MHz | unavailable |
-| WNS / TNS | +8.082 ns / 0 ns | unavailable |
-| WHS / THS | +0.025 ns / 0 ns | unavailable |
-| DRC errors | 0 | unavailable |
+| Metric | Verified 25 MHz baseline | Current 25/100 MHz build |
+| --- | ---: | ---: |
+| LUT | 20,856 / 53,200 (39.20%) | 13,079 / 53,200 (24.58%) |
+| Flip-flop | 6,428 / 106,400 (6.04%) | 9,091 / 106,400 (8.54%) |
+| DSP48E1 | 55 / 220 (25.00%) | 64 / 220 (29.09%) |
+| Block RAM tile | 0 / 140 | 0 / 140 |
+| PS FCLK0 / FCLK1 | 25 MHz / disabled | 25 MHz / 100 MHz |
+| Routed WNS / TNS | +8.082 ns / 0 ns at 25 MHz | +0.070 ns / 0 ns at 100 MHz |
+| Routed WHS / THS | +0.025 ns / 0 ns | +0.037 ns / 0 ns |
+| DRC errors / warnings | 0 / 127 | 0 / 110 |
 
-The 127 DRC advisory warnings remain in the build record; they are not hidden as a clean warning-free result. External asynchronous I/O has no invented synchronous input/output delay constraint. The internal timing result does not verify electrical timing on the sensor or UART links. There is no same-scope baseline build; a numerical before/after improvement would be misleading. A future optimization study must build two equivalent tops with the same constraints, then record resource, latency and sensor error under the same inputs.
+The compute clock target increased fourfold, from 25 to 100 MHz. This does **not** imply fourfold sensor throughput: acquisition remains configured for about 100 PPG pairs per second and the estimator's update window is unchanged. LUT count fell by 7,777 while pipelining added 2,663 flip-flops and 9 DSP blocks. The WNS values use different clock constraints and should not be compared as a direct speedup. A 200 MHz static recheck of the old routed netlist failed with WNS -26.918 ns and 19,857 failing endpoints. Separate 200 MHz filter and divider routes passed, but the complete estimator did not meet 200 MHz synthesis timing; the full design was therefore built at 100 MHz.
+
+The 100 MHz routed timing report has 37,633 endpoints, zero setup/hold failures, and 25 MHz and 100 MHz clock periods of 40 and 10 ns. The clock groups are declared asynchronous. `report_cdc` records one critical classification on the reset path (`reset_hold` logic before the compute reset synchronizer) and 60 mailbox data warnings; these remain visible in `build/reports/cdc.rpt`. The mailbox passed a 20-transfer simulation, but the CDC report is not a blanket proof of all reset sequences. External asynchronous I/O has no invented synchronous input/output delay constraint. Neither internal timing nor these tests verify electrical sensor/UART timing on a board.
 
 ## 4. Correctness and verification status
 
 | Layer | Evidence | Status |
 | --- | --- | --- |
-| Release integrity | `sim/validate_release.py` checks required files, protected RTL hashes, bitstream hash and report markers | Run with this package; result in `sim/validation_result.txt` |
-| Project generation | Clean-source copy recreated PS7 outputs from `.bd` and synthesized | Passed with Vivado 2024.1; `data/clean_source_reproduction.txt` |
-| Full synthesis, implementation, bit | `build/reports/*` and `board/wyxfinalproject.bit` | Passed with Vivado 2024.1 |
-| Full independent rebuild after directory change | `data/clean_rebuild_20261101.txt` | Historical pre-fix build; its payload does not match the current bitstream |
-| Functional RTL simulation for this directory-only revision | No new algorithm or measurement-data change | Not rerun; no simulated capture bundled |
-| Current image, room channel and screen | `data/board_validation_20261102.md`; raw/filtered room sample counters advanced, fault reason cleared, screen displayed a value | Passed for this limited scope |
-| Current image, four-channel liveness | `data/board_validation_20261103.md`; 12 coherent snapshots showed all four available, with raw and filtered counters advancing | Passed for liveness only |
-| Current image, physical four-sensor accuracy test | All four channels still need independent reference comparison and fault-recovery checks | Pending |
+| Release integrity | `sim/validate_release.py` checks required files, protected RTL hashes, two bitstream hashes, and report markers | Run with this package; result in `sim/validation_result.txt` |
+| Project generation | Fresh project copy generated PS7 FCLK1 from `.bd`, then synthesized and routed | Passed with Vivado 2024.1 on 2026-11-04 |
+| Current full synthesis, implementation, bit | `build/reports/*` and `board/wyxfinalproject.bit` | Passed with Vivado 2024.1; WNS +0.070 ns |
+| RTL equivalence and CDC simulation | `sim/run_equivalence.ps1` and `sim/results/` | Filter: 260 samples; divider: 40 cases; estimator: one 400-sample waveform; mailbox: 20 transfers. All passed in XSim. |
+| Earlier independent rebuild after directory change | `data/clean_rebuild_20261101.txt` | Historical 25 MHz baseline; does not validate the 100 MHz image |
+| 25 MHz baseline, room channel and screen | `data/board_validation_20261102.md` | Passed for that image only |
+| 25 MHz baseline, four-channel liveness | `data/board_validation_20261103.md`; 12 coherent snapshots with advancing counters | Passed for that image only |
+| Current 100 MHz image, board liveness, accuracy and fault recovery | No board session yet | Pending |
 | ARM live PL feed | JSONL contract exists, but producer is missing | Pending |
 
-Earlier PYNQ-Z2 sessions demonstrated some sensor channels with older images. Their captures have different firmware provenance and may contain personal health values, so they are not copied into this public package or used to mark the current image as fully validated. The 2026-11-02 board check confirmed the room-channel freshness path and screen behavior after correcting the room sample-sequence connection. The 2026-11-03 check used the same bitstream and confirmed simultaneous four-channel result production; its public record excludes personal values. For competition submission, the pending accuracy row still needs independent reference comparison for this image.
+Earlier PYNQ-Z2 sessions demonstrated some sensor channels with the retained 25 MHz baseline image. Their captures have different firmware provenance from the current 100 MHz image and may contain personal health values, so they are not used to mark the new image as board-validated. The public baseline record excludes personal values. The new estimator equivalence simulation covers only one deterministic waveform; broader numerical equivalence, physical four-channel liveness, independent reference accuracy and fault recovery remain unverified for the 100 MHz image.
 
 ## 5. Reproduction procedure
 
 1. Clone the repository to a short ASCII path on Windows and install Vivado 2024.1 with Zynq-7000 support.
 2. Run `build/open_project.cmd`; inspect part, top and constraints in the generated XPR.
 3. Close the GUI project, run `build/build_bitstream.cmd`, and inspect `build/reports/result.txt`, `timing.rpt`, `drc.rpt` and `utilization.rpt`.
-4. Run `python sim/validate_release.py`. Compare the generated bitstream hash with the recorded hash only when expecting an identical build; tool version or timestamps can change binary hash without proving a functional change.
-5. Follow `board/README.md` to program a physically connected board and record each channel's observed output and reference measurement. A board session is a separate acceptance gate.
+4. Run `powershell -File sim/run_equivalence.ps1` and verify all four PASS markers in `sim/results/`. Run `python sim/validate_release.py` and `python build/check_paths.py .`.
+5. Compare the generated bitstream hash with the recorded hash only when expecting an identical build; tool version or timestamps can change binary hash without proving a functional change.
+6. Follow `board/README.md` to program a physically connected board, establish FCLK0=25 MHz and FCLK1=100 MHz, and record each channel's observed output and reference measurement. A board session is a separate acceptance gate.
 
 ## 6. Sources, collaboration and boundaries
 

@@ -2,7 +2,7 @@
 
 Entry for the 2026 AMD FPGA track, self-selected topic, junior group. The target is the PYNQ-Z2 with an `xc7z020clg400-1` Zynq-7000. FPGA logic accepts a KPT_D01 UART heart-rate value, a separate MAX30102 red/IR pair for SpO2, and two TMP117 temperature devices (probe and room). It filters measurements, handles missing or suspect channels, produces four health states, and drives a Nextion display. The PS-side Python monitor is included as an advisory component.
 
-**Validation status:** Vivado 2024.1 synthesis, implementation, bit generation, DRC, and specified internal-clock timing passed for the current `wyx_final_board_top` design. This bitstream was programmed over JTAG on a PYNQ-Z2. The room TMP117 and Nextion display were checked on 2026-11-02. A 2026-11-03 capture of the same firmware showed fresh raw and filtered result counters on all four channels, with all four marked available in 12 coherent snapshots. These are liveness checks, not four-channel accuracy, fault-recovery, ARM live-data, or SD persistence acceptance tests. No personal health records or simulated captures are included.
+**Validation status (2026-11-04):** The current `board/wyxfinalproject.bit` uses PS FCLK0 at 25 MHz for peripherals and FCLK1 at 100 MHz for the SpO2 compute path. Vivado 2024.1 synthesis, routing, bit generation, DRC error check, and specified internal-clock timing passed. Routed WNS is +0.070 ns with zero failing endpoints. Four RTL tests pass, covering the pipelined filter, divider, one estimator waveform, and the clock-domain mailbox. The 100 MHz image has **not** been programmed on a board. The separate `board/wyxfinalproject_25mhz_verified.bit` was programmed and had four-channel liveness checks on 2026-11-02/03. Those captures do not validate the 100 MHz image. No personal health records or simulated captures are included.
 
 ## Contents
 
@@ -14,7 +14,7 @@ Entry for the 2026 AMD FPGA track, self-selected topic, junior group. The target
 | `src/nextion` | Nextion HMI project, compiled screen asset and event sources. |
 | `sim` | Source and build-evidence validation script; no invented sensor data. |
 | `build` | Reproducible Vivado scripts and synthesis/implementation reports. |
-| `board` | Existing bitstream, board instructions and SD runtime packaging scripts. |
+| `board` | Current 100 MHz bitstream, verified 25 MHz baseline, board instructions and SD runtime packaging scripts. |
 | `data` | Provenance, hash baselines and reference values; no personal measurements. |
 | `skill` | Three reusable skills: sensor-link diagnosis, filter/fault evidence, and shared I2C scheduling. |
 | `report` | Design, tool-version, collaboration and validation reports. |
@@ -36,15 +36,15 @@ The build scripts do not program hardware or write an SD card. See [board/README
 
 | Item | Vivado 2024.1 result |
 | --- | ---: |
-| Internal clock | 25 MHz PS FCLK0 |
-| LUT | 20,856 / 53,200 (39.20%) |
-| Flip-flop | 6,428 / 106,400 (6.04%) |
-| DSP48E1 | 55 / 220 (25.00%) |
+| Internal clocks | FCLK0 25 MHz; FCLK1 100 MHz |
+| LUT | 13,079 / 53,200 (24.58%) |
+| Flip-flop | 9,091 / 106,400 (8.54%) |
+| DSP48E1 | 64 / 220 (29.09%) |
 | Block RAM tiles | 0 / 140 |
-| Routed WNS / WHS | +8.082 ns / +0.025 ns |
-| DRC | 0 errors, 127 advisory warnings |
+| Routed WNS / WHS | +0.070 ns / +0.037 ns |
+| DRC | 0 errors, 110 advisory warnings |
 
-These are reports for the current source after the display refresh and room sample-sequence fixes. The earlier independent rebuild is retained as historical evidence in `data/clean_rebuild_20261101.txt`; it does not describe this bitstream. See `build/reports/`, `data/board_validation_20261102.md`, `data/board_validation_20261103.md` and `report/design_report.md`. External asynchronous I/O delay is not constrained, so timing closure here is not proof of electrical or board-level correctness. No directly comparable pre-optimization whole-board baseline is available; the report does not claim a measured speed/resource improvement.
+See `report/design_report.md` for the before/after resource table and exact test scope. The 25 MHz baseline reports and image are under `build/reports/baseline_25mhz/` and `board/`. `build/reports/cdc.rpt` records one critical classification on the reset path and 60 mailbox data warnings; the mailboxes passed the included simulation, but this is not board validation. External asynchronous I/O delay is not constrained. The prior independent rebuild in `data/clean_rebuild_20261101.txt` applies to the 25 MHz baseline only.
 
 ## License and provenance
 

@@ -21,9 +21,9 @@ module wyx_final_board_top #(
   inout wire i2c_scl,i2c_sda,
   input wire nextion_rx,output wire nextion_tx,
   output wire [3:0] led,output wire led4_r,led4_g,led4_b,buzzer_out);
-wire core_clk,clock_ready;
+wire core_clk,compute_clk,clock_ready;
 wire [63:0] ps_in,ps_out;
-wyx_ps_clock_wrapper u_ps_clock(.FCLK_CLK0_0(core_clk),.FCLK_RESET0_N_0(clock_ready),
+wyx_ps_clock_wrapper u_ps_clock(.FCLK_CLK0_0(core_clk),.FCLK_CLK1_0(compute_clk),.FCLK_RESET0_N_0(clock_ready),
   .FIXED_IO_mio(FIXED_IO_mio),.FIXED_IO_ps_clk(FIXED_IO_ps_clk),
   .FIXED_IO_ps_porb(FIXED_IO_ps_porb),.FIXED_IO_ps_srstb(FIXED_IO_ps_srstb),
   .live_input(ps_in),.live_output(ps_out));
@@ -35,6 +35,30 @@ always @(posedge core_clk) begin
   else reset_hold<={reset_hold[6:0],1'b0};
 end
 wire rst_n=clock_ready && !(|reset_hold);
+wire max_online;
+(* ASYNC_REG="TRUE" *) reg [2:0] compute_reset_sync;
+always @(posedge compute_clk or negedge rst_n) begin
+  if(!rst_n) compute_reset_sync<=0;
+  else compute_reset_sync<={compute_reset_sync[1:0],1'b1};
+end
+wire compute_rst_n=compute_reset_sync[2];
+(* ASYNC_REG="TRUE" *) reg [1:0] max_online_sync;
+always @(posedge compute_clk or negedge compute_rst_n) begin
+  if(!compute_rst_n) max_online_sync<=0;
+  else max_online_sync<={max_online_sync[0],max_online};
+end
+wire max_online_fast=max_online_sync[1];
+localparam integer COMPUTE_MS_DIV=100000; // FCLK1=100MHz，每真实毫秒一拍
+reg [16:0] compute_ms_count;
+reg compute_tick_1ms;
+always @(posedge compute_clk or negedge compute_rst_n) begin
+  if(!compute_rst_n) begin compute_ms_count<=0;compute_tick_1ms<=0;end
+  else begin
+    compute_tick_1ms<=0;
+    if(compute_ms_count==COMPUTE_MS_DIV-1) begin compute_ms_count<=0;compute_tick_1ms<=1;end
+    else compute_ms_count<=compute_ms_count+1'b1;
+  end
+end
 localparam integer MS_DIV=CLK_HZ/1000; // 一毫秒的时钟周期数
 reg [$clog2(MS_DIV)-1:0] divider;
 reg tick_1ms;
@@ -47,7 +71,7 @@ always @(posedge core_clk) begin
     else divider<=divider+1'b1;
   end
 end
-wire body_valid,body_fault,room_valid,room_fault,ppg_raw_valid,max_fault,max_online,fifo_overflow;
+wire body_valid,body_fault,room_valid,room_fault,ppg_raw_valid,max_fault,fifo_overflow;
 wire [17:0] ppg_red,ppg_ir;
 wire signed [15:0] raw_room;
 wire signed [15:0] raw_body;
@@ -64,6 +88,45 @@ wire signed [23:0] red_ac,ir_ac;
 wire spo2_est_valid,spo2_est_good,spo2_result;
 wire [15:0] spo2_est;
 wire [7:0] spo2_reject;
+wire [35:0] ppg_fast_data;
+wire ppg_fast_valid,ppg_mailbox_overflow;
+wire ppg_path_overflow=fifo_overflow || ppg_mailbox_overflow;
+wire compute_overflow_event;
+wire [0:0] compute_overflow_data;
+wire fast_filter_valid,fast_filter_settled,fast_filter_fault;
+wire fast_est_valid,fast_est_good,fast_result_event;
+wire [15:0] fast_spo2_est;
+wire [7:0] fast_spo2_reject;
+wire [24:0] result_slow_data;
+wire result_slow_valid;
+wire [0:0] filter_fault_slow_data;
+(* ASYNC_REG="TRUE" *) reg [1:0] filter_settled_sync;
+always @(posedge core_clk or negedge rst_n) begin
+  if(!rst_n) filter_settled_sync<=0;
+  else filter_settled_sync<={filter_settled_sync[0],fast_filter_settled};
+end
+assign filter_settled=filter_settled_sync[1];
+assign spo2_result=result_slow_valid;
+assign spo2_est_good=result_slow_data[24];
+assign spo2_est_valid=result_slow_valid && result_slow_data[24];
+assign spo2_est=result_slow_data[23:8];
+assign spo2_reject=result_slow_data[7:0];
+wyx_cdc_mailbox #(.WIDTH(36)) u_ppg_to_compute(
+ .sclk(core_clk),.srst_n(rst_n),.s_valid(ppg_raw_valid),.s_data({ppg_red,ppg_ir}),
+ .s_overflow(ppg_mailbox_overflow),.dclk(compute_clk),.drst_n(compute_rst_n),
+ .d_valid(ppg_fast_valid),.d_data(ppg_fast_data));
+wyx_cdc_mailbox #(.WIDTH(1)) u_overflow_to_compute(
+ .sclk(core_clk),.srst_n(rst_n),.s_valid(ppg_path_overflow),.s_data(1'b1),
+ .s_overflow(),.dclk(compute_clk),.drst_n(compute_rst_n),
+ .d_valid(compute_overflow_event),.d_data(compute_overflow_data));
+wyx_cdc_mailbox #(.WIDTH(1)) u_fault_to_peripheral(
+ .sclk(compute_clk),.srst_n(compute_rst_n),.s_valid(fast_filter_fault),.s_data(1'b1),
+ .s_overflow(),.dclk(core_clk),.drst_n(rst_n),
+ .d_valid(filter_fault),.d_data(filter_fault_slow_data));
+wyx_cdc_mailbox #(.WIDTH(25)) u_result_to_peripheral(
+ .sclk(compute_clk),.srst_n(compute_rst_n),.s_valid(fast_result_event),
+ .s_data({fast_est_good,fast_spo2_est,fast_spo2_reject}),.s_overflow(),
+ .dclk(core_clk),.drst_n(rst_n),.d_valid(result_slow_valid),.d_data(result_slow_data));
 reg [31:0] ppg_samples,spo2_samples,room_samples,spo2_errors,room_errors,spo2_age,room_age;
 reg [15:0] spo2_filtered,spo2_pending_data;
 reg signed [15:0] room_filtered,room_pending_data;
@@ -73,15 +136,15 @@ wire [15:0] spo2_filter_wire;
 wire signed [15:0] room_filter_wire;
 wire [2:0] spo2_reason,room_reason;
 wire hr_display_ready,spo2_display_ready,body_display_ready,room_display_ready;
-wyx_ppg_bandpass_pair #(.SAMPLE_HZ(100)) u_max_filter(
- .clk(core_clk),.rst_n(rst_n && max_online && !fifo_overflow),.sample_valid(ppg_raw_valid),
- .raw_a(ppg_red),.raw_b(ppg_ir),.filtered_valid(filtered_ppg_valid),.settled(filter_settled),
- .arithmetic_fault(filter_fault),.raw_a_aligned(red_aligned),.raw_b_aligned(ir_aligned),.ac_a(red_ac),.ac_b(ir_ac));
-wyx_spo2_estimator u_max_estimator(.clk(core_clk),.rst_n(rst_n),.tick_1ms(tick_1ms),
- .sample_valid(filtered_ppg_valid),.stream_online(max_online && filter_settled && !filter_fault),
- .stream_overflow(fifo_overflow),.red_raw(red_aligned),.ir_raw(ir_aligned),
- .red_ac_filtered(red_ac),.ir_ac_filtered(ir_ac),.estimate_valid(spo2_est_valid),.estimate_good(spo2_est_good),
- .spo2_x100(spo2_est),.result_event(spo2_result),.reject_reason(spo2_reject));
+wyx_ppg_bandpass_pair_200 #(.SAMPLE_HZ(100)) u_max_filter(
+ .clk(compute_clk),.rst_n(compute_rst_n && max_online_fast && !compute_overflow_event),.sample_valid(ppg_fast_valid),
+ .raw_a(ppg_fast_data[35:18]),.raw_b(ppg_fast_data[17:0]),.filtered_valid(fast_filter_valid),.settled(fast_filter_settled),
+ .arithmetic_fault(fast_filter_fault),.raw_a_aligned(red_aligned),.raw_b_aligned(ir_aligned),.ac_a(red_ac),.ac_b(ir_ac));
+wyx_spo2_estimator_200 u_max_estimator(.clk(compute_clk),.rst_n(compute_rst_n),.tick_1ms(compute_tick_1ms),
+ .sample_valid(fast_filter_valid),.stream_online(max_online_fast && fast_filter_settled && !fast_filter_fault),
+ .stream_overflow(compute_overflow_event),.red_raw(red_aligned),.ir_raw(ir_aligned),
+ .red_ac_filtered(red_ac),.ir_ac_filtered(ir_ac),.estimate_valid(fast_est_valid),.estimate_good(fast_est_good),
+ .spo2_x100(fast_spo2_est),.result_event(fast_result_event),.reject_reason(fast_spo2_reject));
 always @(posedge core_clk) begin
  if(!rst_n) begin
    ppg_samples<=0;spo2_samples<=0;room_samples<=0;spo2_errors<=0;room_errors<=0;

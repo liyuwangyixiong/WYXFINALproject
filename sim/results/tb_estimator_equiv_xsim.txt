@@ -1,0 +1,17 @@
+
+****** xsim v2024.1 (64-bit)
+  **** SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
+  **** IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+  **** SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+  **** Start of session at: Wed Nov  4 10:12:23 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_estimator_equiv_snapshot/xsim_script.tcl
+# xsim {tb_estimator_equiv_snapshot} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+ESTIMATOR_EQUIVALENCE_PASS cycles=91631 good=1 spo2=7840 reject=00
+$finish called at time : 496182600 ps : File "C:/Users/27274/Documents/Codex/2026-10-01/ze/work/wyx_public_source_20261101/WYXFINALproject/sim/tb_estimator_equiv.sv" Line 62
+exit
+INFO: [Common 17-206] Exiting xsim at Wed Nov  4 10:12:27 2026...

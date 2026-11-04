@@ -20,3 +20,4 @@ set_false_path -from [get_ports kpt_uart_rxd] -to [get_cells -hier -filter {NAME
 set_false_path -from [get_ports nextion_rx] -to [get_cells -hier -filter {NAME =~ *rx_meta_reg}]
 # I2C和UART为自定时外设接口；未用虚构同步外部时钟设置IO延迟。
 # 报告中的内部时序通过不等于外部电气时序或实板测量已通过。
+set_clock_groups -asynchronous -group [get_clocks clk_fpga_0] -group [get_clocks clk_fpga_1]

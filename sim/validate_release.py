@@ -10,6 +10,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = (
     "src/rtl/wyx_final_board_top.sv",
+    "src/rtl/wyx_cdc_mailbox.sv",
+    "src/rtl/wyx_ppg_bandpass_pair_200.sv",
+    "src/rtl/wyx_spo2_estimator_200.sv",
+    "src/rtl/wyx_spo2_u64_div_200.sv",
     "src/drivers/sensor_acquire.v",
     "src/display/nextion_display.sv",
     "src/ip/wyx_ps_clock/wyx_ps_clock.bd",
@@ -20,7 +24,11 @@ REQUIRED = (
     "build/reports/timing.rpt",
     "build/reports/utilization.rpt",
     "build/reports/drc.rpt",
+    "build/reports/cdc.rpt",
+    "build/reports/clock_interaction.rpt",
+    "build/reports/baseline_25mhz/timing.rpt",
     "board/wyxfinalproject.bit",
+    "board/wyxfinalproject_25mhz_verified.bit",
     "board/install_sd_latest.sh",
     "board/load_on_pynq.py",
     "board/prepare_sd_payload.py",
@@ -36,6 +44,11 @@ REQUIRED = (
     "skill/i2c-multidevice-scheduler/SKILL.md",
     "skill/i2c-multidevice-scheduler/references/bus_plan.md",
     "report/design_report.md",
+    "sim/run_equivalence.ps1",
+    "sim/tb_filter_equiv.sv",
+    "sim/tb_div_equiv.sv",
+    "sim/tb_estimator_equiv.sv",
+    "sim/tb_cdc_mailbox.sv",
 )
 
 
@@ -60,13 +73,13 @@ def main() -> None:
         parts = path.relative_to(ROOT).parts
         if parts[:4] == ("src", "ip", "wyx_ps_clock", "ip"):
             continue
-        if any(part in {".git", ".Xil", ".vivado-ai", "NA", "vivado_build", "generated"} for part in parts):
+        if any(part in {".git", ".Xil", ".vivado-ai", "NA", "vivado_build", "generated", "xsim.dir"} for part in parts):
             continue
         if path.name not in conventional and not pattern.fullmatch(path.name):
             errors.append(f"invalid path component: {path.relative_to(ROOT)}")
 
-    baseline = json.loads((ROOT / "data/core_sha256.json").read_text(encoding="utf-8"))
-    for filename, expected in baseline.items():
+    protected_hashes = json.loads((ROOT / "data/core_sha256.json").read_text(encoding="utf-8"))
+    for filename, expected in protected_hashes.items():
         path = ROOT / "src/rtl" / filename
         if not path.is_file() or sha256(path) != expected:
             errors.append(f"protected source differs: {filename}")
@@ -83,6 +96,10 @@ def main() -> None:
         if (payload_hash != inventory["new_bit_payload_sha256_after_109"]
                 or b"wyx_final_board_top" not in bit_bytes[:100]):
             errors.append("bitstream differs beyond the creation-time header")
+    baseline = inventory["baseline_25mhz"]
+    baseline_bit = ROOT / baseline["firmware_path"]
+    if not baseline_bit.is_file() or sha256(baseline_bit) != baseline["sha256"]:
+        errors.append("25 MHz baseline bitstream differs from inventory")
     validation = inventory["new_build_validation"]
     if validation["board_programmed"] is True and not (ROOT / "data/board_validation_20261102.md").is_file():
         errors.append("board-programming evidence is missing")
@@ -99,6 +116,9 @@ def main() -> None:
             errors.append(f"build marker absent: {marker}")
     if "All user specified timing constraints are met" not in timing:
         errors.append("recorded timing report does not show constraint closure")
+    if ("clk_fpga_0  {0.000 20.000}     40.000          25.000" not in timing
+            or "clk_fpga_1  {0.000 5.000}      10.000          100.000" not in timing):
+        errors.append("recorded 25/100 MHz clock summary is missing")
     for marker in (str(validation["lut_used"]), str(validation["ff_used"]), str(validation["dsp48_used"])):
         if marker not in utilization:
             errors.append(f"utilization marker absent: {marker}")
@@ -108,8 +128,8 @@ def main() -> None:
             print("FAIL", error)
         raise SystemExit(1)
     bit_mode = "exact" if bit_hash == inventory["new_bit_sha256"] else "same_payload_new_timestamp"
-    print(f"RELEASE_EVIDENCE_PASS files={len(REQUIRED)} protected_rtl={len(baseline)} bit_sha256={bit_hash} mode={bit_mode}")
-    print("SCOPE: package integrity and Vivado evidence; four-channel liveness recorded, accuracy and fault recovery pending")
+    print(f"RELEASE_EVIDENCE_PASS files={len(REQUIRED)} protected_rtl={len(protected_hashes)} bit_sha256={bit_hash} mode={bit_mode}")
+    print("SCOPE: package integrity and Vivado evidence; 100 MHz image board validation pending")
 
 
 if __name__ == "__main__":

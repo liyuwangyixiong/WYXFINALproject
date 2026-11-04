@@ -54,7 +54,7 @@ def main():
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, destination)
         copied[name] = digest(destination)
-    manifest = {"files": copied, "release_id": "wyxfinalproject-20261103"}
+    manifest = {"files": copied, "release_id": "wyxfinalproject-20261104-100mhz"}
     (output / "data/sd_copy_manifest.json").write_text(
         json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print("SD_PAYLOAD_READY", output, "files=" + str(len(copied)))

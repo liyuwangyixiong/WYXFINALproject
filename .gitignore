@@ -1,6 +1,7 @@
 *.jou
 *.log
 .Xil/
+xsim.dir/
 .vivado-ai/
 *.cache/
 *.runs/
